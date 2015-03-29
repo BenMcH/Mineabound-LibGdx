@@ -18,8 +18,8 @@ This is a 2d Voxel based game that draws inspiration from Minecraft, Terraria an
 ###Cave Generation
 	
 
-##Bugs:
-	###Bedrock
+##Bugs:  
+###Bedrock does not generate
 	
 
 
