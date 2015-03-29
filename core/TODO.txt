@@ -1,0 +1,16 @@
+Features:
+	Health 
+		Fall Damage
+		Damage from mobs/projectiles
+		Harmful blocks
+		Regeneration
+	Mobs
+		Passive
+		hostile
+	Cave Generation
+	
+
+Bugs:
+	Bedrock
+	
+

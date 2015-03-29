@@ -61,10 +61,13 @@ public class MineaboundInputProcessor implements InputProcessor {
 		final Vector3 touchLocation = new Vector3(screenX + .5f, screenY + .5f, 0);
 		Vector3 onScreenLoc = world.getCamera().unproject(touchLocation); // In world point
 		this.lastTouchedPoint.set(new Vector2(onScreenLoc.x, onScreenLoc.y));
-		if (button == Buttons.LEFT)
-			this.world.getChunkHandler().removeBlock(onScreenLoc);
-		else if(button == Buttons.RIGHT){
-			this.world.getChunkHandler().addBlock(onScreenLoc, BlockType.STONE);
+		if (this.world.getPlayer().getDistanceFromPoint(onScreenLoc.x, onScreenLoc.y) < 5) {
+			if (button == Buttons.LEFT)
+				this.world.getChunkHandler().removeBlock(onScreenLoc);
+			else
+				if (button == Buttons.RIGHT) {
+					this.world.getChunkHandler().addBlock(onScreenLoc, BlockType.STONE);
+				}
 		}
 		return true;
 	}

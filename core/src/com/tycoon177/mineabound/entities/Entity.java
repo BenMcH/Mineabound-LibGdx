@@ -114,7 +114,7 @@ public abstract class Entity {
 		velocity.y = MathUtils.clamp(velocity.y, -TERMINAL_VELOCITY, TERMINAL_VELOCITY);
 		float vel = velocity.y;
 		float falling = vel < 0 ? -1 : 1;
-		if(!canFall()){
+		if (!canFall()) {
 			vel = 0;
 			setYVelocity(0);
 		}
@@ -139,7 +139,7 @@ public abstract class Entity {
 						setPosition(getPosition().x, MathUtils.ceil(getPosition().y));
 					else
 						setPosition(getPosition().x, MathUtils.floor(getPosition().y + getSize().y - 1) - getSize().y);
-					//setPosition(oldPosition.x, oldPosition.y);
+					// setPosition(oldPosition.x, oldPosition.y);
 				}
 			}
 			if (Math.abs(vel) >= STANDARD_CHANGE)
@@ -205,4 +205,17 @@ public abstract class Entity {
 
 		return true;
 	}
+
+	public float getDistanceFromPoint(Vector2 point) {
+		Vector2 entityLocation = new Vector2(getPosition());
+		entityLocation.x += getSize().x / 2f;
+		entityLocation.y += getSize().y / 2f;
+		
+		return entityLocation.dst2(point);
+	}
+
+	public float getDistanceFromPoint(float x, float y) {
+		return getDistanceFromPoint(new Vector2(x, y));
+	}
+
 }
