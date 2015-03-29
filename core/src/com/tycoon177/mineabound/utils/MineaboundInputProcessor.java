@@ -15,6 +15,8 @@ public class MineaboundInputProcessor implements InputProcessor {
 	private final float forceX = .1f;
 	private Vector2 lastTouchedPoint;
 
+	private boolean jump = false;
+
 	public MineaboundInputProcessor(GameWorld world) {
 		this.world = world;
 		lastTouchedPoint = new Vector2();
@@ -31,12 +33,7 @@ public class MineaboundInputProcessor implements InputProcessor {
 				world.getPlayer().setDirection(Player.RIGHT);
 				break;
 			case Keys.W:
-			case Keys.SPACE:
-				if (world.getPlayer().canJump())
-					world.getPlayer().jump();// characterMovement.y = forceY;
-				break;
-			case Keys.S:
-				// characterMovement.y = -forceY;
+				jump = true;
 				break;
 		}
 
@@ -50,6 +47,8 @@ public class MineaboundInputProcessor implements InputProcessor {
 			case Keys.D:
 				world.getPlayer().setXVelocity(0);
 				break;
+			case Keys.W:
+				jump = false;
 			default:
 				return false;
 		}
@@ -58,17 +57,30 @@ public class MineaboundInputProcessor implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		final Vector3 touchLocation = new Vector3(screenX + .5f, screenY + .5f, 0);
-		Vector3 onScreenLoc = world.getCamera().unproject(touchLocation); // In world point
-		this.lastTouchedPoint.set(new Vector2(onScreenLoc.x, onScreenLoc.y));
-		if (this.world.getPlayer().getDistanceFromPoint(onScreenLoc.x, onScreenLoc.y) < 5) {
+
+		// Gets the touch within the game and saves it
+		final Vector3 touchLocation = new Vector3(screenX, screenY, 0);
+		Vector3 inWorldLocation = world.getCamera().unproject(touchLocation); // In world point
+		this.lastTouchedPoint.set(new Vector2(inWorldLocation.x, inWorldLocation.y));
+
+		// Turn the player towards the mouse
+		if (world.getPlayer().getPosition().x + world.getPlayer().getSize().x / 2f - inWorldLocation.x < 0) {
+			world.getPlayer().setDirection(Player.RIGHT);
+		}
+		else {
+			world.getPlayer().setDirection(Player.LEFT);
+		}
+
+		// If the touch position is within the minimum distance, respond to the touch
+		if (this.world.getPlayer().getDistanceFromPoint(inWorldLocation.x, inWorldLocation.y) < 5) {
 			if (button == Buttons.LEFT)
-				this.world.getChunkHandler().removeBlock(onScreenLoc);
+				this.world.getChunkHandler().removeBlock(inWorldLocation);
 			else
 				if (button == Buttons.RIGHT) {
-					this.world.getChunkHandler().addBlock(onScreenLoc, BlockType.STONE);
+					this.world.getChunkHandler().addBlock(inWorldLocation, BlockType.STONE);
 				}
 		}
+
 		return true;
 	}
 
@@ -104,6 +116,12 @@ public class MineaboundInputProcessor implements InputProcessor {
 
 	public Vector2 getLastTouchedPoint() {
 		return lastTouchedPoint;
+	}
+
+	public void update() {
+		if (jump)
+			if (world.getPlayer().canJump())
+				world.getPlayer().jump();
 	}
 
 }

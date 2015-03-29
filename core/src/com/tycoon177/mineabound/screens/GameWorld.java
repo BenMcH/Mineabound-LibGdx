@@ -25,16 +25,17 @@ public class GameWorld implements Screen {
 	public static GameWorld world;
 	public static final float VIEWPORT_SIZE = 20;
 	private Music song;
+
 	@Override
 	public void show() {
-		
-		song = Gdx.audio.newMusic(Gdx.files.internal("atazir.mp3"));
-		if(song != null){
+
+		// song = Gdx.audio.newMusic(Gdx.files.internal("atazir.mp3"));
+		if (song != null) {
 			song.setVolume(.1f);
 			song.setLooping(true);
 			song.play();
 		}
-		
+
 		GameWorld.world = this;
 		renderer = new SpriteBatch();
 		camera = new OrthographicCamera();
@@ -55,15 +56,14 @@ public class GameWorld implements Screen {
 		Gdx.gl.glClearColor(.2f, .2f, .75f, 1);
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.update();
-		removeAllBodies();
 		renderer.setProjectionMatrix(camera.combined);
 		renderer.begin();
 		chunkHandler.render(renderer);
 		player.draw(renderer, player.getDirection());
 		renderer.end();
-		if(MineaboundLauncher.IS_DEBUG_RENDERING){
+		if (MineaboundLauncher.IS_DEBUG_RENDERING) {
 			debugRenderer.setProjectionMatrix(camera.combined);
-			//Gdx.gl.glLineWidth(2f);
+			// Gdx.gl.glLineWidth(2f);
 			debugRenderer.begin(ShapeType.Line);
 			debugRenderer.setColor(MineaboundLauncher.PLAYER_BOUNDING_BOX_COLOR);
 			player.debugRender(debugRenderer);
@@ -74,16 +74,13 @@ public class GameWorld implements Screen {
 		update(delta);
 	}
 
-	private void removeAllBodies() {
-		// chunkHandler.removeAllChunksFromWorld();
-	}
-
 	private void update(float delta) {
 		player.update(delta);
 		camera.position.set(player.getPosition(), 0);
 		chunkHandler.update();
-		
-		//cameraZoom();
+
+		cameraZoom();
+		getInputProcessor().update();
 	}
 
 	private void cameraZoom() {
@@ -93,13 +90,6 @@ public class GameWorld implements Screen {
 		if (Gdx.input.isKeyPressed(Input.Keys.PAGE_UP)) {
 			camera.zoom -= 0.02;
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.DEL)) {
-			camera.rotate(-.5f, 0, 0, 1);
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.END)) {
-			camera.rotate(.5f, 0, 0, 1);
-		}
-
 		camera.zoom = MathUtils.clamp(camera.zoom, 0.1f, 100 / camera.viewportWidth);
 
 	}
@@ -107,10 +97,9 @@ public class GameWorld implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		// 80x80 = 1x1
-		//camera.setToOrtho(false, width / 80, height / 80);
 		camera.viewportWidth = VIEWPORT_SIZE;
-		camera.viewportHeight = VIEWPORT_SIZE * height/width;
-		
+		camera.viewportHeight = VIEWPORT_SIZE * height / width;
+
 	}
 
 	@Override
@@ -131,8 +120,10 @@ public class GameWorld implements Screen {
 	@Override
 	public void dispose() {
 		renderer.dispose();
-		song.stop();
-		song.dispose();
+		if (song != null) {
+			song.stop();
+			song.dispose();
+		}
 	}
 
 	public OrthographicCamera getCamera() {
@@ -144,12 +135,12 @@ public class GameWorld implements Screen {
 
 		return player;
 	}
-	
-	public MineaboundInputProcessor getInputProcessor(){
+
+	public MineaboundInputProcessor getInputProcessor() {
 		return inputProcessor;
 	}
-	
-	public ChunkHandler getChunkHandler(){
+
+	public ChunkHandler getChunkHandler() {
 		return chunkHandler;
 	}
 }
