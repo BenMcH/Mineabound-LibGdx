@@ -4,20 +4,22 @@ This is a 2d Voxel based game that draws inspiration from Minecraft, Terraria an
 
 
 #TODO List
-##Features:  
-	Health 
-		Fall Damage
-		Damage from mobs/projectiles
-		Harmful blocks
-		Regeneration
-	Mobs
-		Passive
-		hostile
-	Cave Generation
+##Features:
+###Health 
+* Fall Damage  
+* Damage from mobs/projectiles  
+* Harmful blocks
+* Regeneration  
+
+###Mobs
+* Passive  
+* Hostile
+
+###Cave Generation
 	
 
 ##Bugs:
-	Bedrock
+	###Bedrock
 	
 
 
