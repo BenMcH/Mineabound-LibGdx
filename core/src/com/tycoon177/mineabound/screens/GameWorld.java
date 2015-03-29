@@ -27,6 +27,7 @@ public class GameWorld implements Screen {
 	private Music song;
 	@Override
 	public void show() {
+		
 		song = Gdx.audio.newMusic(Gdx.files.internal("atazir.mp3"));
 		if(song != null){
 			song.setVolume(.1f);
