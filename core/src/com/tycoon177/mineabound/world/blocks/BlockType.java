@@ -1,4 +1,4 @@
-package com.tycoon177.mineabound.world;
+package com.tycoon177.mineabound.world.blocks;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.tycoon177.mineabound.utils.LoadedTextureAtlas;
@@ -37,4 +37,5 @@ public enum BlockType {
 	public float getBounciness(){
 		return bounciness;
 	}
+	
 }

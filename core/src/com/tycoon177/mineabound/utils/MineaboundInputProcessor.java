@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.tycoon177.mineabound.entities.Player;
 import com.tycoon177.mineabound.screens.GameWorld;
-import com.tycoon177.mineabound.world.BlockType;
+import com.tycoon177.mineabound.world.blocks.BlockType;
 
 public class MineaboundInputProcessor implements InputProcessor {
 

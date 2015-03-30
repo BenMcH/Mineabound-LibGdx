@@ -77,7 +77,7 @@ public class GameWorld implements Screen {
 	private void update(float delta) {
 		player.update(delta);
 		camera.position.set(player.getPosition(), 0);
-		chunkHandler.update();
+		chunkHandler.update(delta);
 
 		cameraZoom();
 		getInputProcessor().update();
@@ -104,12 +104,12 @@ public class GameWorld implements Screen {
 
 	@Override
 	public void pause() {
-
+		
 	}
 
 	@Override
 	public void resume() {
-
+		
 	}
 
 	@Override
@@ -127,12 +127,10 @@ public class GameWorld implements Screen {
 	}
 
 	public OrthographicCamera getCamera() {
-
 		return camera;
 	}
 
 	public Player getPlayer() {
-
 		return player;
 	}
 

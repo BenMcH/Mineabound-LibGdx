@@ -1,12 +1,11 @@
 package com.tycoon177.mineabound.entities;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.tycoon177.mineabound.screens.GameWorld;
-import com.tycoon177.mineabound.world.Block;
+import com.tycoon177.mineabound.world.blocks.Block;
 
 public class LivingEntity extends Entity {
 
@@ -55,7 +54,6 @@ public class LivingEntity extends Entity {
 		}
 		return inventory[xLoc + yLoc * INVENTORY_WIDTH];
 	}
-	
 
 	public int getDirection() {
 		return direction;
@@ -66,13 +64,16 @@ public class LivingEntity extends Entity {
 	}
 
 	public boolean canJump() {
-		// float thicknessOfBB = .01f;
 
-		/*
-		 * Rectangle boundingBox = new Rectangle(getPosition().x + thicknessOfBB, getPosition().y - thicknessOfBB, getSize().x - 2 * thicknessOfBB, thicknessOfBB); for (Block block : GameWorld.world.getChunkHandler().getVisibleBlocks()) if (block.collides(boundingBox)) return true; return false;
-		 */
+		float thicknessOfBB = .01f;
 
-		return MathUtils.isEqual(getVelocity().y, 0);
+		Array<Block> blocks = GameWorld.world.getChunkHandler().getVisibleBlocks();
+		Rectangle player = new Rectangle(getPosition().x + thicknessOfBB, getPosition().y - thicknessOfBB, this.getSize().x - thicknessOfBB * 2, this.getSize().y);
+		for (Block block : blocks) {
+			if (block.collides(player))
+				return true;
+		}
+		return false;
 	}
 
 	public void jump() {
@@ -90,6 +91,5 @@ public class LivingEntity extends Entity {
 		}
 		return false;
 	}
-
 
 }

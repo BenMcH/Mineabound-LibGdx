@@ -6,10 +6,13 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.tycoon177.mineabound.screens.GameWorld;
 import com.tycoon177.mineabound.utils.PerlinNoiseGenerator;
+import com.tycoon177.mineabound.world.blocks.Block;
+import com.tycoon177.mineabound.world.blocks.BlockType;
 
 public class Chunk {
 	private static final PerlinNoiseGenerator caveNoiseGen = new PerlinNoiseGenerator(128);
-	private static PerlinNoiseGenerator noiseMap = new PerlinNoiseGenerator(1);
+	private static PerlinNoiseGenerator heightMap = new PerlinNoiseGenerator(1);
+	private static PerlinNoiseGenerator bedrockNoise = new PerlinNoiseGenerator(BlockType.BEDROCK.getBlockID());
 	private Block[][] block;
 	public static int WIDTH = 16, HEIGHT = 256;
 	private int id;
@@ -17,6 +20,21 @@ public class Chunk {
 	public Chunk(int id) {
 		this.id = id;
 		generateChunk();
+	}
+
+	/*
+	 * 
+	 * 
+	 * 
+	 * Public Helper methods
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+
+	public int getID() {
+		return id;
 	}
 
 	public void render(SpriteBatch renderer) {
@@ -33,57 +51,114 @@ public class Chunk {
 		}
 	}
 
-	public int getID() {
-		return id;
+	public Block[][] getBlocks() {
+		return block;
 	}
 
-	public void generateChunk() {
+	public void removeBlock(int x, int y) {
+		if (block[x][y] != null)
+			block[x][y].setBlockType(BlockType.AIR);
+		else
+			block[x][y] = new Block(BlockType.AIR, new Vector2(this.id * WIDTH + x, y));
+	}
 
-		int currentHeight = 50;
-		float[] noise = generateNoise(id, noiseMap);
+	public boolean addBlock(int x, int y, BlockType type) {
+		if (GameWorld.world.getPlayer().isColliding())
+			return false;
+		if (block[x][y] != null) {
+			if (block[x][y].getBlockType() == BlockType.AIR) {
+				block[x][y].setBlockType(type);
+			}
+			else
+				return false;
+		}
+		else
+			block[x][y] = new Block(type, new Vector2(this.id * WIDTH + x, y));
+		if (GameWorld.world.getPlayer().isColliding()) {
+			removeBlock(x, y);
+			return false;
+		}
+		return true;
+	}
 
-		block = new Block[WIDTH][HEIGHT];
-		float[][] caveNoise = getCaveNoise(id, caveNoiseGen);
+	public void update(float deltaTime) {
+		for (int i = 0; i < block.length; i++) {
+			for (int j = 0; j < block[0].length; j++) {
+				if (block[i][j] == null) {
+					block[i][j] = new Block(BlockType.AIR, new Vector2(this.id * WIDTH + i, j));
+				}
+				block[i][j].update(deltaTime);
+			}
+		}
+	}
+
+	public int getCurrentHeight(int chunkID, PerlinNoiseGenerator generator) {
+		return getCurrentHeight(chunkID, generator, 0, HEIGHT - 1, 50);
+	}
+
+	public int getCurrentHeight(int chunkID, PerlinNoiseGenerator generator, int min, int max, int startingHeight) {
+		int currentHeight = startingHeight;
 		if (id > 0)
 			for (int i = 0; i < id; i++) {
 
-				float[] noiseTemp = generateNoise(i, noiseMap);
+				float[] noiseTemp = generate1DNoise(i, generator);
 				for (float dy : noiseTemp) {
 					currentHeight += (dy);
-					currentHeight = MathUtils.clamp(currentHeight, 0, HEIGHT - 1);
+					currentHeight = MathUtils.clamp(currentHeight, min, max);
 				}
 			}
 		else
 			if (id < 0)
 				for (int i = 0; i >= id; i--) {
 
-					float[] noiseTemp = generateNoise(i, noiseMap);
+					float[] noiseTemp = generate1DNoise(i, generator);
 					for (float dy : noiseTemp) {
 						currentHeight += (dy);
-						currentHeight = MathUtils.clamp(currentHeight, 0, HEIGHT - 1);
+						currentHeight = MathUtils.clamp(currentHeight, min, max);
 					}
 				}
+		return currentHeight;
+	}
 
+	/*
+	 * 
+	 * Private Methods
+	 * 
+	 * 
+	 */
+
+	private void generateChunk() {
+
+		int chunkHeight = getCurrentHeight(id, heightMap);
+		int bedrockHeightMap = getCurrentHeight(id, bedrockNoise, 1, 3, 1);
+		float[] heightNoise = generate1DNoise(id, heightMap);
+		float[] bedrockNoiseMap = generate1DNoise(id, bedrockNoise);
+		block = new Block[WIDTH][HEIGHT];
+		float[][] caveNoise = generate2DNoise(id, caveNoiseGen);
 		for (int x = 0; x < WIDTH; x++) {
-			for (int y = 0; y < HEIGHT && y < currentHeight; y++) {
-				block[x][y] = new Block(y < currentHeight ? BlockType.DIRT : BlockType.AIR, new Vector2(this.id * WIDTH + x, y));
-				if(caveNoise[x][y] > .1f){
+			for (int y = 0; y < HEIGHT; y++) {
+				BlockType type = BlockType.AIR;
+				if (y < chunkHeight)
+					type = BlockType.DIRT;
+				if (y <= bedrockHeightMap)
+					type = BlockType.BEDROCK;
+				block[x][y] = new Block(type, new Vector2(this.id * WIDTH + x, y));
+				if (caveNoise[x][y] > .1f) {
 					block[x][y].setBlockType(BlockType.AIR);
-				}else
-				if (y == currentHeight - 1)
-					block[x][y].setBlockType(BlockType.GRASS);
-				
-				// if (caveNoise[x][y] > 0)
-				// block[x][y].setBlockType(BlockType.AIR);
+				}
+				else
+					if (y == chunkHeight - 1)
+						block[x][y].setBlockType(BlockType.GRASS);
 			}
 
-			currentHeight += (noise[x]);
-			currentHeight = MathUtils.clamp(currentHeight, 0, HEIGHT - 1);
+			chunkHeight += (heightNoise[x]);
+			bedrockHeightMap += bedrockNoiseMap[x];
+			chunkHeight = MathUtils.clamp(chunkHeight, 0, HEIGHT - 1);
 		}
 
 	}
 
-	private float[] generateNoise(int chunkId, PerlinNoiseGenerator noiseMap) {
+	private float[] generate1DNoise(int chunkId, PerlinNoiseGenerator noiseMap) {
 
 		int offset = chunkId * WIDTH;
 		if (chunkId < 0)
@@ -106,7 +181,7 @@ public class Chunk {
 		return noise;
 	}
 
-	private float[][] getCaveNoise(int chunkId, PerlinNoiseGenerator noiseMap) {
+	private float[][] generate2DNoise(int chunkId, PerlinNoiseGenerator noiseMap) {
 		int offset = chunkId * WIDTH;
 		if (chunkId < 0)
 			offset += WIDTH;
@@ -129,32 +204,6 @@ public class Chunk {
 
 		return noise;
 
-	}
-
-	public Block[][] getBlocks() {
-		return block;
-	}
-
-	public void removeBlock(int x, int y) {
-		if (block[x][y] != null)
-			block[x][y].setBlockType(BlockType.AIR);
-		else
-			block[x][y] = new Block(BlockType.AIR, new Vector2(this.id * WIDTH + x, y));
-	}
-
-	public boolean addBlock(int x, int y, BlockType type) {
-		if(GameWorld.world.getPlayer().isColliding()) return false;
-		if(block[x][y] != null){
-			if(block[x][y].getBlockType() == BlockType.AIR){
-				block[x][y].setBlockType(type);
-			}else return false;
-		}else
-			block[x][y] = new Block(type, new Vector2(this.id * WIDTH + x, y));
-		if(GameWorld.world.getPlayer().isColliding()){
-			removeBlock(x, y);
-			return false;
-		}
-		return true;
 	}
 
 }

@@ -8,8 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.tycoon177.mineabound.screens.GameWorld;
-import com.tycoon177.mineabound.world.Block;
 import com.tycoon177.mineabound.world.Chunk;
+import com.tycoon177.mineabound.world.blocks.Block;
 
 public abstract class Entity {
 	private Sprite sprite;

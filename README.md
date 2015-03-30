@@ -29,9 +29,14 @@ This is a 2d Voxel based game that draws inspiration from Minecraft, Terraria an
 ###Inventory GUI Popup 	
   * Grid system with draggable components
 	
+###Better Lighting
+  * Day/Night Cycles
+  * Torches
+  * Shadows
 
 ##Bugs:  
-###Bedrock does not generate
+###~~Bedrock does not generate~~
+###Jumping on the side of a block causes massive slowdown during streaming.
 	
 
 

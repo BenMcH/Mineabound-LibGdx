@@ -1,4 +1,4 @@
-package com.tycoon177.mineabound.world;
+package com.tycoon177.mineabound.world.blocks;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -10,7 +10,8 @@ public class Block {
 	private BlockType type;
 	private float width = 1, height = 1;
 	private Vector2 position;
-
+	private boolean isActive = false;
+	
 	public Block(BlockType type, Vector2 position) {
 		this(type);
 		this.position.set(position);
@@ -75,5 +76,20 @@ public class Block {
 		if (type != BlockType.AIR)
 			debugRenderer.rect(position.x, position.y, width, height);
 	}
+	
+	public void setActive(boolean isActive){
+		this.isActive = isActive;
+	}
+	
+	public boolean getIsActive(){
+		return isActive;
+	}
+	
+	
+	/**
+	 * Used to apply updates to the blocks (Such as opening and closing gates and the like)
+	 * @param deltaTime
+	 */
+	public void update(float deltaTime){}
 
 }
