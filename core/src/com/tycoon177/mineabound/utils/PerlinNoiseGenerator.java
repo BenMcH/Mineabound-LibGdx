@@ -23,9 +23,6 @@ public class PerlinNoiseGenerator {
 
 	private static final int N = 0x1000;
 
-	/** Default seed to use for the random number generation */
-	private static final int DEFAULT_SEED = 100;
-
 	/** Default sample size to work with */
 	private static final int DEFAULT_SAMPLE_SIZE = 256;
 

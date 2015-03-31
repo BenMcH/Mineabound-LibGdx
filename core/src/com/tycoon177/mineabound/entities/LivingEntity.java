@@ -22,7 +22,7 @@ public class LivingEntity extends Entity {
 	private static final int INVENTORY_WIDTH = 10, INVENTORY_HEIGHT = 5;
 	private int direction = RIGHT;
 	public static final float JUMP_VELOCITY = .22f;
-	
+	public static final float forceX = 6f;
 	public LivingEntity() {
 		this(new Vector2(), null);
 		hotbar = new Block[9];

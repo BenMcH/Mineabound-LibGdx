@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.tycoon177.mineabound.entities.LivingEntity;
 import com.tycoon177.mineabound.entities.Player;
 import com.tycoon177.mineabound.screens.GameWorld;
 import com.tycoon177.mineabound.world.blocks.Block;
@@ -13,11 +14,11 @@ import com.tycoon177.mineabound.world.blocks.BlockType;
 public class MineaboundInputProcessor implements InputProcessor {
 
 	private GameWorld world;
-	private final float forceX = .1f;
+	
 	private Vector2 lastTouchedPoint;
 
 	private boolean jump = false;
-
+	private boolean shiftModifier = false;
 	public MineaboundInputProcessor(GameWorld world) {
 		this.world = world;
 		lastTouchedPoint = new Vector2();
@@ -26,15 +27,19 @@ public class MineaboundInputProcessor implements InputProcessor {
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
 			case Keys.A:
-				world.getPlayer().setXVelocity(-forceX);
+				world.getPlayer().setXVelocity(-LivingEntity.forceX * (shiftModifier ? 1.5f : 1f));
 				world.getPlayer().setDirection(Player.LEFT);
 				break;
 			case Keys.D:
-				world.getPlayer().setXVelocity(forceX);
+				world.getPlayer().setXVelocity(LivingEntity.forceX * (shiftModifier ? 1.5f : 1f));
 				world.getPlayer().setDirection(Player.RIGHT);
 				break;
 			case Keys.W:
 				jump = true;
+				break;
+			case Keys.SHIFT_LEFT:
+			case Keys.SHIFT_RIGHT:
+				shiftModifier = true;
 				break;
 		}
 
@@ -50,6 +55,11 @@ public class MineaboundInputProcessor implements InputProcessor {
 				break;
 			case Keys.W:
 				jump = false;
+				break;
+			case Keys.SHIFT_LEFT:
+			case Keys.SHIFT_RIGHT:
+				shiftModifier = false;
+				break;
 			default:
 				return false;
 		}

@@ -12,6 +12,8 @@ import com.tycoon177.mineabound.world.Chunk;
 import com.tycoon177.mineabound.world.blocks.Block;
 
 public abstract class Entity {
+	public static final float WIDTH = .5f;
+	public static final float HEIGHT = .5f;
 	private Sprite sprite;
 	private float width, height;
 	public static final int RIGHT = 1, LEFT = 0;
@@ -81,9 +83,8 @@ public abstract class Entity {
 	public void update(float deltaTime) {
 		float change = .0125f;
 		applyGravity(deltaTime);
-		float vel = getVelocity().x;
+		float vel = getVelocity().x * deltaTime;
 		float direction = vel > 0 ? 1 : -1;
-		//float collisionFix = .001f;
 		Vector2 oldPosition = new Vector2();
 		while (vel != 0) {
 			oldPosition.set(getPosition());
@@ -233,6 +234,10 @@ public abstract class Entity {
 
 	public float getDistanceFromPoint(float x, float y) {
 		return getDistanceFromPoint(new Vector2(x, y));
+	}
+
+	public Rectangle getHitBox() {
+		return new Rectangle(getPosition().x, getPosition().y, getSize().x, getSize().y);
 	}
 
 }
