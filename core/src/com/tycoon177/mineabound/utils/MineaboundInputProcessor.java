@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.tycoon177.mineabound.entities.Player;
 import com.tycoon177.mineabound.screens.GameWorld;
+import com.tycoon177.mineabound.world.blocks.Block;
 import com.tycoon177.mineabound.world.blocks.BlockType;
 
 public class MineaboundInputProcessor implements InputProcessor {
@@ -77,7 +78,9 @@ public class MineaboundInputProcessor implements InputProcessor {
 				this.world.getChunkHandler().removeBlock(inWorldLocation);
 			else
 				if (button == Buttons.RIGHT) {
-					this.world.getChunkHandler().addBlock(inWorldLocation, BlockType.STONE);
+					Block block = world.getPlayer().getHotbar()[world.getPlayer().getHotbarIndex()];
+					if (block != null && block.getBlockType() != BlockType.AIR)
+						this.world.getChunkHandler().addBlock(inWorldLocation, block.getBlockType());
 				}
 		}
 
@@ -110,8 +113,8 @@ public class MineaboundInputProcessor implements InputProcessor {
 
 	@Override
 	public boolean scrolled(int amount) {
-
-		return false;
+		world.getPlayer().moveHotbarIndex(amount);
+		return true;
 	}
 
 	public Vector2 getLastTouchedPoint() {

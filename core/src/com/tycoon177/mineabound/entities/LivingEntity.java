@@ -18,6 +18,7 @@ public class LivingEntity extends Entity {
 	private float health = 10;
 	private Entity[] inventory;
 	private Block[] hotbar;
+	private int hotbarIndex = 0;
 	private static final int INVENTORY_WIDTH = 10, INVENTORY_HEIGHT = 5;
 	private int direction = RIGHT;
 	public static final float JUMP_VELOCITY = .22f;
@@ -102,5 +103,15 @@ public class LivingEntity extends Entity {
 			setYVelocity(JUMP_VELOCITY);
 	}
 
-
+	public void moveHotbarIndex(int amount){
+		this.hotbarIndex += amount;
+		if(hotbarIndex <= 0){
+			hotbarIndex = hotbar.length-1;
+		}
+		hotbarIndex %= hotbar.length;
+	}
+	
+	public int getHotbarIndex(){
+		return hotbarIndex;
+	}
 }

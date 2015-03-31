@@ -19,6 +19,7 @@ public class Player extends LivingEntity {
 	private OrthographicCamera headsUpDisplayCamera;
 	private boolean openInventory = false;
 	private Sprite inventoryGridPiece = LoadedTextureAtlas.blockAtlas.createSprite("cell");
+	private Sprite selectedInventoryGridPiece = LoadedTextureAtlas.blockAtlas.createSprite("selectedCell");
 
 	public Player() {
 		super();
@@ -55,7 +56,7 @@ public class Player extends LivingEntity {
 		}
 		for (int i = 0; i < 9; i++) {
 			Sprite s = (Sprite) getHotbar()[i].getBlockType().getSprite();
-			batch.draw(inventoryGridPiece, i - headsUpDisplayCamera.viewportWidth / 4f, -headsUpDisplayCamera.viewportHeight / 2.1f, 1, 1);
+			batch.draw(i == getHotbarIndex() ? selectedInventoryGridPiece : inventoryGridPiece, i - headsUpDisplayCamera.viewportWidth / 4f, -headsUpDisplayCamera.viewportHeight / 2.1f, 1, 1);
 			if (s != null)
 				batch.draw(s, i - headsUpDisplayCamera.viewportWidth / 4f + .01f, -headsUpDisplayCamera.viewportHeight / 2.1f + .01f, .98f, .98f);
 		}

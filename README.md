@@ -22,7 +22,7 @@ This is a 2d Voxel based game that draws inspiration from Minecraft, Terraria an
   * Ladders or Ropes?
   
 ###HUD
-  * Hotbar
+  * ~~Hotbar~~
   * Health
   * Hunger?
   

@@ -45,3 +45,10 @@ stone
   orig: 16, 16
   offset: 0, 0
   index: -1
+selectedCell
+  rotate: false
+  xy: 19, 3
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
