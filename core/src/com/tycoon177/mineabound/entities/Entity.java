@@ -72,30 +72,33 @@ public abstract class Entity {
 	public Vector2 getSize() {
 		return new Vector2(width, height);
 	}
-	
-	public Array<Block> getCollisions(){
-		
+
+	public Array<Block> getCollisions() {
+
 		return null;
 	}
 
 	public void update(float deltaTime) {
+		float change = .0125f;
 		applyGravity(deltaTime);
-		float collisionFix = .001f;
-		if (getVelocity().x != 0) {
-			if (canMove(getVelocity().x > 0 ? RIGHT : LEFT)) {
-				updateLocation(new Vector2(getVelocity().x, 0));
-				if (isColliding()) {
-					if (getVelocity().x > 0) {
-						while (!canMove(RIGHT))
-							updateLocation(new Vector2(-collisionFix, 0));
-						updateLocation(new Vector2(collisionFix, 0));
-					}
-					else
-						while (!canMove(LEFT))
-							updateLocation(new Vector2(collisionFix, 0));
-					updateLocation(new Vector2(-collisionFix, 0));
+		float vel = getVelocity().x;
+		float direction = vel > 0 ? 1 : -1;
+		//float collisionFix = .001f;
+		Vector2 oldPosition = new Vector2();
+		while (vel != 0) {
+			oldPosition.set(getPosition());
+			float amountToChangeBy = Math.abs(vel) >= change ? (direction * change) : vel;
+			if (canMove(vel > 0 ? RIGHT : LEFT)) {
+				updateLocation(new Vector2(amountToChangeBy, 0));
+				if (!canMove(LEFT) || !canMove(RIGHT)) {
+					setPosition(oldPosition.x, oldPosition.y);
+					vel = 0;
 				}
 			}
+			if (Math.abs(vel) >= change)
+				vel -= (direction * change);
+			else
+				vel = 0;
 		}
 	}
 
@@ -119,7 +122,7 @@ public abstract class Entity {
 		velocity.y -= GRAVITY_FORCE * deltaTime;
 		velocity.y = MathUtils.clamp(velocity.y, -TERMINAL_VELOCITY, TERMINAL_VELOCITY);
 		float vel = velocity.y;
-		float falling = vel < 0 ? -1 : 1;
+		float direction = vel < 0 ? -1 : 1;
 		if (!canFall()) {
 			vel = 0;
 			setYVelocity(0);
@@ -127,7 +130,7 @@ public abstract class Entity {
 		Vector2 oldPosition = new Vector2();
 		while (vel != 0) {
 			oldPosition.set(getPosition());
-			float amountToChangeBy = Math.abs(vel) >= STANDARD_CHANGE ? (falling * STANDARD_CHANGE) : vel;
+			float amountToChangeBy = Math.abs(vel) >= STANDARD_CHANGE ? (direction * STANDARD_CHANGE) : vel;
 			if (!canFall()) {
 				setYVelocity(0);
 				vel = 0;
@@ -136,8 +139,9 @@ public abstract class Entity {
 				if (vel > 0 && canRise()) {
 					updateLocation(new Vector2(0, amountToChangeBy));
 				}
-				if (vel < 0 && canFall())
-					updateLocation(new Vector2(0, amountToChangeBy));
+				else
+					if (vel < 0 && canFall())
+						updateLocation(new Vector2(0, amountToChangeBy));
 				if (!canFall() || !canRise()) {
 					setYVelocity(0);
 					vel = 0;
@@ -149,7 +153,7 @@ public abstract class Entity {
 				}
 			}
 			if (Math.abs(vel) >= STANDARD_CHANGE)
-				vel -= (falling * STANDARD_CHANGE);
+				vel -= (direction * STANDARD_CHANGE);
 			else
 				vel = 0;
 		}
@@ -159,6 +163,12 @@ public abstract class Entity {
 	}
 
 	public boolean isColliding() {
+		Array<Block> blocks = GameWorld.world.getChunkHandler().getVisibleBlocks();
+		Rectangle player = new Rectangle(getPosition().x + .000001f, getPosition().y, this.getSize().x - .000002f, this.getSize().y);
+		for (Block block : blocks) {
+			if (block.collides(player))
+				return true;
+		}
 		return false;
 	}
 
@@ -195,7 +205,8 @@ public abstract class Entity {
 	}
 
 	public boolean canFall() {
-		Rectangle boundingBox = new Rectangle(getPosition().x + .01f, getPosition().y, getSize().x * .98f, getSize().y * .1f);
+		float reducedSize = 0.01f;
+		Rectangle boundingBox = new Rectangle(getPosition().x + reducedSize, getPosition().y, getSize().x - 2 * reducedSize, getSize().y * .1f);
 		for (Block block : GameWorld.world.getChunkHandler().getVisibleBlocks())
 			if (block.collides(boundingBox))
 				return false;
@@ -216,7 +227,7 @@ public abstract class Entity {
 		Vector2 entityLocation = new Vector2(getPosition());
 		entityLocation.x += getSize().x / 2f;
 		entityLocation.y += getSize().y / 2f;
-		
+
 		return entityLocation.dst2(point);
 	}
 

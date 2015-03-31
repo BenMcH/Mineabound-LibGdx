@@ -6,17 +6,34 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.tycoon177.mineabound.screens.GameWorld;
 import com.tycoon177.mineabound.world.blocks.Block;
+import com.tycoon177.mineabound.world.blocks.BlockType;
 
+/**
+ * Handles the entities which will have things such as health and an inventory.
+ * @author Ben
+ *
+ */
 public class LivingEntity extends Entity {
 
 	private float health = 10;
 	private Entity[] inventory;
+	private Block[] hotbar;
 	private static final int INVENTORY_WIDTH = 10, INVENTORY_HEIGHT = 5;
 	private int direction = RIGHT;
 	public static final float JUMP_VELOCITY = .22f;
-
+	
 	public LivingEntity() {
 		this(new Vector2(), null);
+		hotbar = new Block[9];
+		hotbar[0] = new Block(BlockType.BEDROCK);
+		hotbar[1] = new Block(BlockType.DIRT);
+		hotbar[2] = new Block(BlockType.GRASS);
+		hotbar[3] = new Block(BlockType.STONE);
+		hotbar[4] = new Block(BlockType.AIR);
+		hotbar[5] = new Block(BlockType.AIR);
+		hotbar[6] = new Block(BlockType.AIR);
+		hotbar[7] = new Block(BlockType.AIR);
+		hotbar[8] = new Block(BlockType.AIR);
 	}
 
 	public LivingEntity(Vector2 vec2, Sprite sprite) {
@@ -54,6 +71,10 @@ public class LivingEntity extends Entity {
 		}
 		return inventory[xLoc + yLoc * INVENTORY_WIDTH];
 	}
+	
+	public Block[] getHotbar(){
+		return hotbar;
+	}
 
 	public int getDirection() {
 		return direction;
@@ -81,15 +102,5 @@ public class LivingEntity extends Entity {
 			setYVelocity(JUMP_VELOCITY);
 	}
 
-	@Override
-	public boolean isColliding() {
-		Array<Block> blocks = GameWorld.world.getChunkHandler().getVisibleBlocks();
-		Rectangle player = new Rectangle(getPosition().x + .00000001f, getPosition().y, this.getSize().x - .00000001f, this.getSize().y);
-		for (Block block : blocks) {
-			if (block.collides(player))
-				return true;
-		}
-		return false;
-	}
 
 }

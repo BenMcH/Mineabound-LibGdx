@@ -9,7 +9,7 @@ import com.tycoon177.mineabound.entities.LivingEntity;
  * The basis for the Mob framework. Will need to update to add basic AI and the like.
  *
  */
-public class Mob extends LivingEntity {
+public abstract class Mob extends LivingEntity {
 
 	public Mob() {
 		super();

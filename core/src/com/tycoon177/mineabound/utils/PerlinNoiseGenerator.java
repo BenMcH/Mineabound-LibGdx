@@ -42,7 +42,7 @@ public class PerlinNoiseGenerator {
 	 * Create a new noise creator with the default seed value
 	 */
 	public PerlinNoiseGenerator() {
-		this(DEFAULT_SEED);
+		this(MathUtils.random.nextInt());
 	}
 
 	/**

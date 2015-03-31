@@ -9,14 +9,30 @@ import com.tycoon177.mineabound.utils.PerlinNoiseGenerator;
 import com.tycoon177.mineabound.world.blocks.Block;
 import com.tycoon177.mineabound.world.blocks.BlockType;
 
+/**
+ * This class is used by the ChunkHandler class to manage the blocks in smaller "Chunks"
+ * 
+ * @author Ben
+ *
+ */
 public class Chunk {
-	private static final PerlinNoiseGenerator caveNoiseGen = new PerlinNoiseGenerator(128);
-	private static PerlinNoiseGenerator heightMap = new PerlinNoiseGenerator(1);
-	private static PerlinNoiseGenerator bedrockNoise = new PerlinNoiseGenerator(BlockType.BEDROCK.getBlockID());
+	private static final PerlinNoiseGenerator caveNoiseGen = new PerlinNoiseGenerator();
+	private static PerlinNoiseGenerator heightMap = new PerlinNoiseGenerator();
+	private static PerlinNoiseGenerator bedrockNoise = new PerlinNoiseGenerator();
 	private Block[][] block;
 	public static int WIDTH = 16, HEIGHT = 256;
 	private int id;
 
+	
+	// Frequency = features. Higher = more features
+	// Weight = smoothness. Higher frequency = more smoothness
+	private static final float HEIGHT_FREQ = 0.3f;
+	private static final float HEIGHT_WEIGHT = 3f;
+	private static final float CAVE_FREQ = 0.45f;
+	private static final float CAVE_WEIGHT = 2f;
+	private static final float BEDROCK_FREQ = 0.3f;
+	private static final float BEDROCK_WEIGHT = 1f;
+	
 	public Chunk(int id) {
 		this.id = id;
 		generateChunk();
@@ -27,10 +43,6 @@ public class Chunk {
 	 * 
 	 * 
 	 * Public Helper methods
-	 * 
-	 * 
-	 * 
-	 * 
 	 */
 
 	public int getID() {
@@ -93,28 +105,28 @@ public class Chunk {
 	}
 
 	public int getCurrentHeight(int chunkID, PerlinNoiseGenerator generator) {
-		return getCurrentHeight(chunkID, generator, 0, HEIGHT - 1, 50);
+		return getCurrentHeight(chunkID, generator, 1, HEIGHT - 1, 50, HEIGHT_FREQ, HEIGHT_WEIGHT);
 	}
 
-	public int getCurrentHeight(int chunkID, PerlinNoiseGenerator generator, int min, int max, int startingHeight) {
+	public int getCurrentHeight(int chunkID, PerlinNoiseGenerator generator, int minHeight, int maxHeight, int startingHeight, float frequency, float weight) {
 		int currentHeight = startingHeight;
 		if (id > 0)
 			for (int i = 0; i < id; i++) {
 
-				float[] noiseTemp = generate1DNoise(i, generator);
+				float[] noiseTemp = generate1DNoise(i, generator, frequency, weight);
 				for (float dy : noiseTemp) {
 					currentHeight += (dy);
-					currentHeight = MathUtils.clamp(currentHeight, min, max);
+					currentHeight = MathUtils.clamp(currentHeight, minHeight, maxHeight);
 				}
 			}
 		else
 			if (id < 0)
 				for (int i = 0; i >= id; i--) {
 
-					float[] noiseTemp = generate1DNoise(i, generator);
+					float[] noiseTemp = generate1DNoise(i, generator, frequency, weight);
 					for (float dy : noiseTemp) {
 						currentHeight += (dy);
-						currentHeight = MathUtils.clamp(currentHeight, min, max);
+						currentHeight = MathUtils.clamp(currentHeight, minHeight, maxHeight);
 					}
 				}
 		return currentHeight;
@@ -123,18 +135,16 @@ public class Chunk {
 	/*
 	 * 
 	 * Private Methods
-	 * 
-	 * 
 	 */
 
 	private void generateChunk() {
 
 		int chunkHeight = getCurrentHeight(id, heightMap);
-		int bedrockHeightMap = getCurrentHeight(id, bedrockNoise, 1, 3, 1);
-		float[] heightNoise = generate1DNoise(id, heightMap);
-		float[] bedrockNoiseMap = generate1DNoise(id, bedrockNoise);
+		int bedrockHeightMap = getCurrentHeight(id, bedrockNoise, 1, 3, 1, BEDROCK_FREQ, BEDROCK_WEIGHT);
+		float[] heightNoise = generate1DNoise(id, heightMap, HEIGHT_FREQ, HEIGHT_WEIGHT);
+		float[] bedrockNoiseMap = generate1DNoise(id, bedrockNoise, BEDROCK_FREQ, BEDROCK_WEIGHT);
 		block = new Block[WIDTH][HEIGHT];
-		float[][] caveNoise = generate2DNoise(id, caveNoiseGen);
+		float[][] caveNoise = generate2DNoise(id, caveNoiseGen, CAVE_FREQ, CAVE_WEIGHT);
 		for (int x = 0; x < WIDTH; x++) {
 			for (int y = 0; y < HEIGHT; y++) {
 				BlockType type = BlockType.AIR;
@@ -158,16 +168,12 @@ public class Chunk {
 
 	}
 
-	private float[] generate1DNoise(int chunkId, PerlinNoiseGenerator noiseMap) {
+	private float[] generate1DNoise(int chunkId, PerlinNoiseGenerator noiseMap, float frequency, float weight) {
 
 		int offset = chunkId * WIDTH;
 		if (chunkId < 0)
 			offset += WIDTH;
 		float[] noise = new float[WIDTH];
-		// Frequency = features. Higher = more features
-		float frequency = 0.3f;
-		// Weight = smoothness. Higher frequency = more smoothness
-		float weight = 3f;
 
 		for (int passes = 0; passes < 6; passes++) {
 			for (int x = 0; x < WIDTH; x++) {
@@ -181,15 +187,13 @@ public class Chunk {
 		return noise;
 	}
 
-	private float[][] generate2DNoise(int chunkId, PerlinNoiseGenerator noiseMap) {
+	private float[][] generate2DNoise(int chunkId, PerlinNoiseGenerator noiseMap, float frequency, float weight) {
 		int offset = chunkId * WIDTH;
 		if (chunkId < 0)
 			offset += WIDTH;
 		float[][] noise = new float[WIDTH][HEIGHT];
 		// Frequency = features. Higher = more features
-		float frequency = 0.125f;
 		// Weight = smoothness. Higher frequency = more smoothness
-		float weight = 1.5f;
 
 		for (int passes = 0; passes < 6; passes++) {
 			for (int x = 0; x < WIDTH; x++) {

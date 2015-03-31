@@ -1,17 +1,25 @@
 package com.tycoon177.mineabound.entities;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.tycoon177.mineabound.utils.LoadedTextureAtlas;
 
+/**
+ * This class handles the player interactions
+ * 
+ * @author Ben
+ *
+ */
 public class Player extends LivingEntity {
 	/** The default player size **/
 	private Vector2 playerSize = new Vector2(.6f, 1.8f);
 	private OrthographicCamera headsUpDisplayCamera;
 	private boolean openInventory = false;
-	//private Sprite inventoryGridPiece = LoadedTextureAtlas.blockAtlas.createSprite("gridPiece");
+	private Sprite inventoryGridPiece = LoadedTextureAtlas.blockAtlas.createSprite("cell");
+
 	public Player() {
 		super();
 		headsUpDisplayCamera = new OrthographicCamera(20, 10);
@@ -42,10 +50,15 @@ public class Player extends LivingEntity {
 	private void drawHUD(SpriteBatch batch) {
 		Matrix4 oldMat = batch.getProjectionMatrix();
 		batch.setProjectionMatrix(headsUpDisplayCamera.combined);
-		if(isInventoryOpen()){
+		if (isInventoryOpen()) {
 			// Draw Inventory here!
 		}
-		
+		for (int i = 0; i < 9; i++) {
+			Sprite s = (Sprite) getHotbar()[i].getBlockType().getSprite();
+			batch.draw(inventoryGridPiece, i - headsUpDisplayCamera.viewportWidth / 4f, -headsUpDisplayCamera.viewportHeight / 2.1f, 1, 1);
+			if (s != null)
+				batch.draw(s, i - headsUpDisplayCamera.viewportWidth / 4f + .01f, -headsUpDisplayCamera.viewportHeight / 2.1f + .01f, .98f, .98f);
+		}
 		batch.setProjectionMatrix(oldMat);
 	}
 
