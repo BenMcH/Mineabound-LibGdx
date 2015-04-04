@@ -11,17 +11,18 @@ import com.tycoon177.mineabound.screens.GameWorld;
 import com.tycoon177.mineabound.world.Chunk;
 import com.tycoon177.mineabound.world.blocks.Block;
 
-public abstract class Entity {
-	public static final float WIDTH = .5f;
-	public static final float HEIGHT = .5f;
-	private Sprite sprite;
-	private float width, height;
-	public static final int RIGHT = 1, LEFT = 0;
-	private Vector2 position;
-	private Vector2 velocity;
+public class Entity {
+	public static final float DEFAULT_WIDTH = .5f;
+	public static final float DEFAULT_HEIGHT = .5f;
 	public static final float GRAVITY_FORCE = .98f;
 	public static final float TERMINAL_VELOCITY = 1f;
 	private static final float STANDARD_CHANGE = 0.125f;
+	public static final int RIGHT = 1, LEFT = 0;
+
+	private float width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
+	private Sprite sprite;
+	private Vector2 position;
+	private Vector2 velocity;
 
 	public Entity() {
 		velocity = new Vector2();
@@ -30,9 +31,8 @@ public abstract class Entity {
 
 	public Entity(Vector2 vec2, Sprite sprite) {
 		this();
-		position = vec2;
+		position.set(vec2);
 		setSprite(sprite);
-
 	}
 
 	public Vector2 getPosition() {
@@ -66,7 +66,7 @@ public abstract class Entity {
 				batch.draw(sprite, (getPosition().x) + width, getPosition().y, -width, height);
 	}
 
-	protected void setSize(float width, float height) {
+	public void setSize(float width, float height) {
 		this.width = width;
 		this.height = height;
 	}
@@ -81,8 +81,8 @@ public abstract class Entity {
 	}
 
 	public void update(float deltaTime) {
-		float change = .0125f;
 		applyGravity(deltaTime);
+		float change = Math.abs(getVelocity().x) * deltaTime;
 		float vel = getVelocity().x * deltaTime;
 		float direction = vel > 0 ? 1 : -1;
 		Vector2 oldPosition = new Vector2();
@@ -238,6 +238,11 @@ public abstract class Entity {
 
 	public Rectangle getHitBox() {
 		return new Rectangle(getPosition().x, getPosition().y, getSize().x, getSize().y);
+	}
+
+	public void drawEntity(SpriteBatch renderer) {
+		renderer.draw(getSprite(), getPosition().x, getPosition().y, getSize().x, getSize().y);
+		System.out.println(getPosition().x + " " + getPosition().y);
 	}
 
 }

@@ -3,8 +3,10 @@ package com.tycoon177.mineabound.utils;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.tycoon177.mineabound.entities.Entity;
 import com.tycoon177.mineabound.entities.LivingEntity;
 import com.tycoon177.mineabound.entities.Player;
 import com.tycoon177.mineabound.screens.GameWorld;
@@ -40,6 +42,12 @@ public class MineaboundInputProcessor implements InputProcessor {
 			case Keys.SHIFT_LEFT:
 			case Keys.SHIFT_RIGHT:
 				shiftModifier = true;
+				break;
+			case Keys.L:
+				Entity r = new Entity(new Vector2(world.getPlayer().getPosition()), LoadedTextureAtlas.blockAtlas.createSprite("bedrock"));
+				//r.setSize(2, 2);
+				world.getEntityHandler().addEntity(r);
+				System.out.println("Added entity at " + r.getPosition());
 				break;
 		}
 

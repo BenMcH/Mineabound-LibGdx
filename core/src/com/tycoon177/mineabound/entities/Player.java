@@ -1,10 +1,12 @@
 package com.tycoon177.mineabound.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.sun.xml.internal.ws.dump.LoggingDumpTube.Position;
 import com.tycoon177.mineabound.utils.LoadedTextureAtlas;
 
 /**
@@ -30,6 +32,7 @@ public class Player extends LivingEntity {
 
 	@Override
 	public void draw(SpriteBatch batch, int direction) {
+		Gdx.graphics.setTitle("Position: X:" + getPosition().x + " Y: " + getPosition().y);
 		super.draw(batch, direction);
 		drawHUD(batch);
 	}
@@ -49,7 +52,7 @@ public class Player extends LivingEntity {
 	 *            The Spritebatch used for drawing
 	 */
 	private void drawHUD(SpriteBatch batch) {
-		Matrix4 oldMat = batch.getProjectionMatrix();
+		Matrix4 oldMat = batch.getProjectionMatrix().cpy();
 		batch.setProjectionMatrix(headsUpDisplayCamera.combined);
 		if (isInventoryOpen()) {
 			// Draw Inventory here!

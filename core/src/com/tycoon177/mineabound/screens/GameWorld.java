@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.tycoon177.mineabound.MineaboundLauncher;
+import com.tycoon177.mineabound.entities.EntityHandler;
 import com.tycoon177.mineabound.entities.Player;
 import com.tycoon177.mineabound.utils.MineaboundInputProcessor;
 import com.tycoon177.mineabound.world.ChunkHandler;
@@ -25,7 +26,8 @@ public class GameWorld implements Screen {
 	public static GameWorld world;
 	public static final float VIEWPORT_SIZE = 20;
 	private Music song;
-
+	private EntityHandler entityHandler = new EntityHandler();
+	
 	@Override
 	public void show() {
 
@@ -58,7 +60,10 @@ public class GameWorld implements Screen {
 		camera.update();
 		renderer.setProjectionMatrix(camera.combined);
 		renderer.begin();
+		float color = .1f;
+		renderer.setColor(color, color, color, 1f);
 		chunkHandler.render(renderer);
+		entityHandler.render(renderer);
 		player.draw(renderer, player.getDirection());
 		renderer.end();
 		if (MineaboundLauncher.IS_DEBUG_RENDERING) {
@@ -76,9 +81,9 @@ public class GameWorld implements Screen {
 
 	private void update(float delta) {
 		player.update(delta);
+		entityHandler.update(delta);
 		camera.position.set(player.getPosition(), 0);
 		chunkHandler.update(delta);
-
 		cameraZoom();
 		getInputProcessor().update();
 	}
@@ -140,5 +145,9 @@ public class GameWorld implements Screen {
 
 	public ChunkHandler getChunkHandler() {
 		return chunkHandler;
+	}
+
+	public EntityHandler getEntityHandler() {
+		return entityHandler;
 	}
 }
