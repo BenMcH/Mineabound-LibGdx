@@ -34,6 +34,18 @@ This is a 2d Voxel based game that draws inspiration from Minecraft, Terraria an
   * Torches
   * Shadows
 
+###Stats
+  * Steps
+  * Blocks Created
+  * Blocks destroyed
+  
+###Texture Packs
+  * ~~Import static textures into the world.~~
+  * Sky textures
+  * Player Model
+  * Animated Texture
+  
+
 ##Bugs:  
 ###~~Bedrock does not generate~~
 ###~~Jumping on the side of a block causes massive slowdown.~~

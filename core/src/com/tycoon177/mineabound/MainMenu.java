@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.tycoon177.mineabound.screens.GameWorld;
+import com.tycoon177.mineabound.utils.TexturePack;
 
 public class MainMenu implements Screen {
 	private Stage stage;
@@ -19,6 +20,9 @@ public class MainMenu implements Screen {
 
 	@Override
 	public void show() {
+		MineaboundLauncher.preferences = Gdx.app.getPreferences("mineabound_settings");
+		TexturePack.init();
+		
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
 		VisUI.load();
