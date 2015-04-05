@@ -79,8 +79,6 @@ public class GameWorld implements Screen {
 		player.drawHUD(renderer);
 		renderer.end();
 		update(delta);
-		System.out.println(renderer.totalRenderCalls);
-		renderer.totalRenderCalls = 0;
 		Gdx.graphics.setTitle(Gdx.graphics.getFramesPerSecond() + "");
 	}
 

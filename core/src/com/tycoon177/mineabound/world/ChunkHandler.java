@@ -15,10 +15,12 @@ import com.tycoon177.mineabound.world.blocks.BlockType;
 
 public class ChunkHandler {
 	public static HashMap<Integer, Chunk> chunks;
+	public static Array<Block> visibleBlocks;
 
 	public ChunkHandler() {
 		chunks = new HashMap<Integer, Chunk>();
 		addChunk(new Chunk(0));
+		visibleBlocks = new Array<Block>();
 	}
 
 	public Chunk addChunk(Chunk chunk) {
@@ -116,10 +118,11 @@ public class ChunkHandler {
 		// System.out.println(chunkNum);
 		if (x < 0)
 			chunkNum -= 1;
-		int nX = (int) (x % Chunk.WIDTH);
-		if (nX < 0){
+		int nX = (MathUtils.floor(x) % Chunk.WIDTH);
+		if (nX < 0) {
 			nX = (Chunk.WIDTH + nX);
 		}
-			return getChunk(chunkNum).getBlocks()[nX][((int) y) % Chunk.HEIGHT].getBlockType();
+		int nY = MathUtils.floor(y) % Chunk.HEIGHT;
+		return getChunk(chunkNum).getBlocks()[nX][nY].getBlockType();
 	}
 }

@@ -132,35 +132,31 @@ public class Entity {
 		float vel = velocity.y * deltaTime;
 		float direction = vel < 0 ? -1 : 1;
 		if (!canFall) {
-			vel = 0;
+			setPosition(getPosition().x, MathUtils.ceil(getPosition().y));
 		}
 		while (vel != 0) {
 			oldPosition.set(getPosition());
 			float amountToChangeBy = Math.abs(vel) >= STANDARD_CHANGE ? (direction * STANDARD_CHANGE) : vel;
-			if (!canFall) {
-				// setYVelocity(0);
-				vel = 0;
+			// if (!canFall) {
+			// setYVelocity(0);
+			// vel = 0;
+			// }
+			if ((vel > 0 && canRise) || (vel < 0 && canFall)) {
+				updateLocation(new Vector2(0, amountToChangeBy));
+				canFall = canFall();
+				canRise = canRise();
 			}
-			if (vel != 0) {
-				if ((vel > 0 && canRise) || (vel < 0 && canFall)) {
-					updateLocation(new Vector2(0, amountToChangeBy));
-					canFall = canFall();
-					canRise = canRise();
+			if (!canFall || !canRise) {
+				vel = 0;
+				if (!canFall) {
+					setPosition(getPosition().x, MathUtils.ceil(getPosition().y));
+					BlockType block = GameWorld.world.getChunkHandler().getBlockAtPos(MathUtils.floor(getPosition().x), Math.round(getPosition().y) - 1);
+					setYVelocity((-getVelocity().y) * block.getBounciness());
 				}
-				if (!canFall || !canRise) {
-					vel = 0;
-					if (!canFall) {
-						setPosition(getPosition().x, MathUtils.ceil(getPosition().y));
-						BlockType block = GameWorld.world.getChunkHandler().getBlockAtPos(MathUtils.floor(getPosition().x), Math.round(getPosition().y)-1);
-						System.out.println(block.getBounciness());
-						System.out.println(block.name());
-						setYVelocity((-getVelocity().y) * block.getBounciness());
-					}
-					else {
-						setPosition(getPosition().x, MathUtils.floor(getPosition().y + getSize().y - 1) - getSize().y);
-						setYVelocity(0);
-						// setPosition(oldPosition.x, oldPosition.y);
-					}
+				else {
+					setPosition(getPosition().x, MathUtils.floor(getPosition().y + getSize().y) - getSize().y - 1);
+					setYVelocity(0);
+					// setPosition(oldPosition.x, oldPosition.y);
 				}
 			}
 			if (Math.abs(vel) >= STANDARD_CHANGE)
@@ -216,22 +212,15 @@ public class Entity {
 	}
 
 	public boolean canFall() {
-		float reducedSize = 0.01f;
-		boundingBox.set(getPosition().x + reducedSize, getPosition().y, getSize().x - 2 * reducedSize, getSize().y * .1f);
-		for (Block block : GameWorld.world.getChunkHandler().getVisibleBlocks())
-			if (block.collides(boundingBox))
-				return false;
-
-		return true;
+		boolean left = GameWorld.world.getChunkHandler().getBlockAtPos(getPosition().x, getPosition().y).equals(BlockType.AIR);
+		boolean right = GameWorld.world.getChunkHandler().getBlockAtPos(getPosition().x + getSize().x, getPosition().y).equals(BlockType.AIR);
+		return left && right;
 	}
 
 	public boolean canRise() {
-		boundingBox.set(getPosition().x + .01f, getPosition().y + getSize().y - .01f, getSize().x * .98f, .01f);
-		for (Block block : GameWorld.world.getChunkHandler().getVisibleBlocks())
-			if (block.collides(boundingBox))
-				return false;
-
-		return true;
+		boolean left = GameWorld.world.getChunkHandler().getBlockAtPos(getPosition().x, getPosition().y + getSize().y).equals(BlockType.AIR);
+		boolean right = GameWorld.world.getChunkHandler().getBlockAtPos(getPosition().x + getSize().x, getPosition().y + getSize().y).equals(BlockType.AIR);
+		return left && right;
 	}
 
 	public float getDistanceFromPoint(Vector2 point) {
@@ -246,12 +235,11 @@ public class Entity {
 	}
 
 	public Rectangle getHitBox() {
-		return new Rectangle(getPosition().x, getPosition().y, getSize().x, getSize().y);
+		return boundingBox.set(getPosition().x, getPosition().y, getSize().x, getSize().y);
 	}
 
 	public void drawEntity(SpriteBatch renderer) {
 		renderer.draw(getSprite(), getPosition().x, getPosition().y, getSize().x, getSize().y);
-		// System.out.println(getPosition().x + " " + getPosition().y);
 	}
 
 }

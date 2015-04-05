@@ -49,6 +49,6 @@ This is a 2d Voxel based game that draws inspiration from Minecraft, Terraria an
 ##Bugs:  
 ###~~Bedrock does not generate~~
 ###~~Jumping on the side of a block causes massive slowdown.~~
-###Player Gravity stronger when entities are spawned	
+###~~Player Gravity stronger when entities are spawned~~	
 
 

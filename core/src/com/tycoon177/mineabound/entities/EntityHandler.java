@@ -26,7 +26,7 @@ public class EntityHandler {
 	}
 
 	public void update(float deltaTime) {
-		for (Entity entity : entities) {
+		for (Entity entity : getVisibleEntities()) {
 			entity.update(deltaTime);
 		}
 	}
