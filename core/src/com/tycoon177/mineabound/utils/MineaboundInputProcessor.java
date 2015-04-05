@@ -43,7 +43,7 @@ public class MineaboundInputProcessor implements InputProcessor {
 				shiftModifier = true;
 				break;
 			case Keys.L:
-				Entity r = new Entity(new Vector2(world.getPlayer().getPosition()), LoadedTextureAtlas.blockAtlas.createSprite("bedrock"));
+				Entity r = new Entity(new Vector2(world.getPlayer().getPosition()), TexturePack.getTexture("bedrock"));
 				//r.setSize(2, 2);
 				world.getEntityHandler().addEntity(r);
 				System.out.println("Added entity at " + r.getPosition());

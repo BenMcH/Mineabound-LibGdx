@@ -1,12 +1,11 @@
 package com.tycoon177.mineabound.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.tycoon177.mineabound.utils.LoadedTextureAtlas;
+import com.tycoon177.mineabound.utils.TexturePack;
 
 /**
  * This class handles the player interactions
@@ -19,14 +18,14 @@ public class Player extends LivingEntity {
 	private Vector2 playerSize = new Vector2(.6f, 1.8f);
 	private OrthographicCamera headsUpDisplayCamera;
 	private boolean openInventory = false;
-	private Sprite inventoryGridPiece = LoadedTextureAtlas.blockAtlas.createSprite("cell");
-	private Sprite selectedInventoryGridPiece = LoadedTextureAtlas.blockAtlas.createSprite("selectedCell");
+	private Sprite inventoryGridPiece = TexturePack.getTexture("cell");
+	private Sprite selectedInventoryGridPiece = TexturePack.getTexture("selectedCell");
 
 	public Player() {
 		super();
 		headsUpDisplayCamera = new OrthographicCamera(20, 10);
 		setSize(playerSize.x, playerSize.y);
-		this.setSprite(LoadedTextureAtlas.blockAtlas.createSprite("playerStill"));
+		this.setSprite(TexturePack.getTexture("playerStill"));
 	}
 
 	@Override
