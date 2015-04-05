@@ -5,7 +5,7 @@ import com.tycoon177.mineabound.utils.TexturePack;
 
 public enum BlockType {
 	AIR(0, "air"),
-	STONE(1,"stone", .2f),
+	STONE(1,"stone"),
 	GRASS(2,"grass_side"),
 	DIRT(3, "dirt"), 
 	BEDROCK(7, "bedrock");

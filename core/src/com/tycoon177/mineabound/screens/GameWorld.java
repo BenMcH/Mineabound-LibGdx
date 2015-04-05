@@ -61,7 +61,6 @@ public class GameWorld implements Screen {
 		renderer.setProjectionMatrix(camera.combined);
 		renderer.begin();
 		float color = .1f;
-	//	renderer.setColor(color, color, color, 1f);
 		chunkHandler.render(renderer);
 		entityHandler.render(renderer);
 		player.draw(renderer, player.getDirection());
@@ -80,6 +79,9 @@ public class GameWorld implements Screen {
 		player.drawHUD(renderer);
 		renderer.end();
 		update(delta);
+		System.out.println(renderer.totalRenderCalls);
+		renderer.totalRenderCalls = 0;
+		Gdx.graphics.setTitle(Gdx.graphics.getFramesPerSecond() + "");
 	}
 
 	private void update(float delta) {

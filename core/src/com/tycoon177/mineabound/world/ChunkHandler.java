@@ -32,7 +32,7 @@ public class ChunkHandler {
 	}
 
 	public void update(float deltaTime) {
-		for(Chunk chunk : getVisibleChunks()){
+		for (Chunk chunk : getVisibleChunks()) {
 			chunk.update(deltaTime);
 		}
 	}
@@ -109,5 +109,17 @@ public class ChunkHandler {
 			x = Chunk.WIDTH - 1 + x; // If the location is negative, bring it to the corresponding positive location in the chunk.
 		}
 		getChunk(chunkIndex).addBlock(x, MathUtils.floor(touchLocation.y), type);
+	}
+
+	public BlockType getBlockAtPos(float x, float y) {
+		int chunkNum = (int) (x) / Chunk.WIDTH;
+		// System.out.println(chunkNum);
+		if (x < 0)
+			chunkNum -= 1;
+		int nX = (int) (x % Chunk.WIDTH);
+		if (nX < 0){
+			nX = (Chunk.WIDTH + nX);
+		}
+			return getChunk(chunkNum).getBlocks()[nX][((int) y) % Chunk.HEIGHT].getBlockType();
 	}
 }

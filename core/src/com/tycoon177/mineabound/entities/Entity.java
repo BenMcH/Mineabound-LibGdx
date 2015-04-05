@@ -10,12 +10,13 @@ import com.badlogic.gdx.utils.Array;
 import com.tycoon177.mineabound.screens.GameWorld;
 import com.tycoon177.mineabound.world.Chunk;
 import com.tycoon177.mineabound.world.blocks.Block;
+import com.tycoon177.mineabound.world.blocks.BlockType;
 
 public class Entity {
 	public static final float DEFAULT_WIDTH = .5f;
 	public static final float DEFAULT_HEIGHT = .5f;
-	public static final float GRAVITY_FORCE = .98f;
-	public static final float TERMINAL_VELOCITY = 1f;
+	public static final float GRAVITY_FORCE = 40f;
+	public static final float TERMINAL_VELOCITY = 100f;
 	private static final float STANDARD_CHANGE = 0.125f;
 	public static final int RIGHT = 1, LEFT = 0;
 
@@ -23,10 +24,14 @@ public class Entity {
 	private Sprite sprite;
 	private Vector2 position;
 	private Vector2 velocity;
+	private Vector2 oldPosition;
+	private Rectangle boundingBox;
 
 	public Entity() {
 		velocity = new Vector2();
 		position = new Vector2();
+		oldPosition = new Vector2();
+		boundingBox = new Rectangle();
 	}
 
 	public Entity(Vector2 vec2, Sprite sprite) {
@@ -82,10 +87,11 @@ public class Entity {
 
 	public void update(float deltaTime) {
 		applyGravity(deltaTime);
+		if (getVelocity().x == 0)
+			return;
 		float change = Math.abs(getVelocity().x) * deltaTime;
 		float vel = getVelocity().x * deltaTime;
 		float direction = vel > 0 ? 1 : -1;
-		Vector2 oldPosition = new Vector2();
 		while (vel != 0) {
 			oldPosition.set(getPosition());
 			float amountToChangeBy = Math.abs(vel) >= change ? (direction * change) : vel;
@@ -105,7 +111,6 @@ public class Entity {
 
 	public boolean canMove(int direction) {
 		float thicknessOfBB = .01f;
-		Rectangle boundingBox = new Rectangle();
 		if (direction == LEFT) {
 			boundingBox.set(getPosition().x, getPosition().y + thicknessOfBB, thicknessOfBB, getSize().y - 2 * thicknessOfBB);
 		}
@@ -120,37 +125,42 @@ public class Entity {
 	}
 
 	public void applyGravity(float deltaTime) {
+		boolean canFall = canFall();
+		boolean canRise = canRise();
 		velocity.y -= GRAVITY_FORCE * deltaTime;
 		velocity.y = MathUtils.clamp(velocity.y, -TERMINAL_VELOCITY, TERMINAL_VELOCITY);
-		float vel = velocity.y;
+		float vel = velocity.y * deltaTime;
 		float direction = vel < 0 ? -1 : 1;
-		if (!canFall()) {
+		if (!canFall) {
 			vel = 0;
-			setYVelocity(0);
 		}
-		Vector2 oldPosition = new Vector2();
 		while (vel != 0) {
 			oldPosition.set(getPosition());
 			float amountToChangeBy = Math.abs(vel) >= STANDARD_CHANGE ? (direction * STANDARD_CHANGE) : vel;
-			if (!canFall()) {
-				setYVelocity(0);
+			if (!canFall) {
+				// setYVelocity(0);
 				vel = 0;
 			}
 			if (vel != 0) {
-				if (vel > 0 && canRise()) {
+				if ((vel > 0 && canRise) || (vel < 0 && canFall)) {
 					updateLocation(new Vector2(0, amountToChangeBy));
+					canFall = canFall();
+					canRise = canRise();
 				}
-				else
-					if (vel < 0 && canFall())
-						updateLocation(new Vector2(0, amountToChangeBy));
-				if (!canFall() || !canRise()) {
-					setYVelocity(0);
+				if (!canFall || !canRise) {
 					vel = 0;
-					if (!canFall())
+					if (!canFall) {
 						setPosition(getPosition().x, MathUtils.ceil(getPosition().y));
-					else
+						BlockType block = GameWorld.world.getChunkHandler().getBlockAtPos(MathUtils.floor(getPosition().x), Math.round(getPosition().y)-1);
+						System.out.println(block.getBounciness());
+						System.out.println(block.name());
+						setYVelocity((-getVelocity().y) * block.getBounciness());
+					}
+					else {
 						setPosition(getPosition().x, MathUtils.floor(getPosition().y + getSize().y - 1) - getSize().y);
-					// setPosition(oldPosition.x, oldPosition.y);
+						setYVelocity(0);
+						// setPosition(oldPosition.x, oldPosition.y);
+					}
 				}
 			}
 			if (Math.abs(vel) >= STANDARD_CHANGE)
@@ -207,7 +217,7 @@ public class Entity {
 
 	public boolean canFall() {
 		float reducedSize = 0.01f;
-		Rectangle boundingBox = new Rectangle(getPosition().x + reducedSize, getPosition().y, getSize().x - 2 * reducedSize, getSize().y * .1f);
+		boundingBox.set(getPosition().x + reducedSize, getPosition().y, getSize().x - 2 * reducedSize, getSize().y * .1f);
 		for (Block block : GameWorld.world.getChunkHandler().getVisibleBlocks())
 			if (block.collides(boundingBox))
 				return false;
@@ -216,7 +226,7 @@ public class Entity {
 	}
 
 	public boolean canRise() {
-		Rectangle boundingBox = new Rectangle(getPosition().x + .01f, getPosition().y + getSize().y - .01f, getSize().x * .98f, .01f);
+		boundingBox.set(getPosition().x + .01f, getPosition().y + getSize().y - .01f, getSize().x * .98f, .01f);
 		for (Block block : GameWorld.world.getChunkHandler().getVisibleBlocks())
 			if (block.collides(boundingBox))
 				return false;
@@ -228,7 +238,6 @@ public class Entity {
 		Vector2 entityLocation = new Vector2(getPosition());
 		entityLocation.x += getSize().x / 2f;
 		entityLocation.y += getSize().y / 2f;
-
 		return entityLocation.dst2(point);
 	}
 
@@ -242,7 +251,7 @@ public class Entity {
 
 	public void drawEntity(SpriteBatch renderer) {
 		renderer.draw(getSprite(), getPosition().x, getPosition().y, getSize().x, getSize().y);
-		System.out.println(getPosition().x + " " + getPosition().y);
+		// System.out.println(getPosition().x + " " + getPosition().y);
 	}
 
 }

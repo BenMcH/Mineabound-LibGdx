@@ -46,7 +46,6 @@ public class EntityHandler {
 		for (Entity ent : entities) {
 			if (r.overlaps(ent.getHitBox())){
 				visibleEntities.add(ent);
-				System.out.println("Found an entity!");
 			}
 		}
 		return visibleEntities;

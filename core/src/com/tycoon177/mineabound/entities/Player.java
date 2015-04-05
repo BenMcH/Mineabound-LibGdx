@@ -31,7 +31,6 @@ public class Player extends LivingEntity {
 
 	@Override
 	public void draw(SpriteBatch batch, int direction) {
-		Gdx.graphics.setTitle("Position: X:" + getPosition().x + " Y: " + getPosition().y);
 		super.draw(batch, direction);
 	}
 
