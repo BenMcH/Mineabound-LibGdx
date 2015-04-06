@@ -154,7 +154,8 @@ public class Entity {
 				if (!canFall) {
 					setPosition(getPosition().x, MathUtils.ceil(getPosition().y));
 					BlockType block = GameWorld.world.getChunkHandler().getBlockTypeAtPos(MathUtils.floor(getPosition().x), Math.round(getPosition().y) - 1);
-					setYVelocity((-getVelocity().y) * block.getBounciness());
+					BlockType block2 = GameWorld.world.getChunkHandler().getBlockTypeAtPos(MathUtils.floor(getPosition().x + getSize().x), Math.round(getPosition().y) - 1);
+					setYVelocity((-getVelocity().y) * Math.max(block.getBounciness(), block2.getBounciness()));
 				}
 				else {
 					setPosition(getPosition().x, MathUtils.floor(getPosition().y + getSize().y) - getSize().y - 1);
