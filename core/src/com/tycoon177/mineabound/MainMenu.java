@@ -22,7 +22,6 @@ public class MainMenu implements Screen {
 	public void show() {
 		MineaboundLauncher.preferences = Gdx.app.getPreferences("mineabound_settings");
 		TexturePack.init();
-		
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
 		VisUI.load();

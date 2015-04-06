@@ -113,7 +113,7 @@ public class ChunkHandler {
 		getChunk(chunkIndex).addBlock(x, MathUtils.floor(touchLocation.y), type);
 	}
 
-	public BlockType getBlockAtPos(float x, float y) {
+	public BlockType getBlockTypeAtPos(float x, float y) {
 		int chunkNum = (int) (x) / Chunk.WIDTH;
 		// System.out.println(chunkNum);
 		if (x < 0)

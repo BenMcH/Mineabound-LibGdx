@@ -92,6 +92,9 @@ public class Entity {
 		float change = Math.abs(getVelocity().x) * deltaTime;
 		float vel = getVelocity().x * deltaTime;
 		float direction = vel > 0 ? 1 : -1;
+		if(vel != 0 && this instanceof Player)
+			((Player)this).setDirection(vel > 0 ? RIGHT : LEFT);
+			
 		while (vel != 0) {
 			oldPosition.set(getPosition());
 			float amountToChangeBy = Math.abs(vel) >= change ? (direction * change) : vel;
@@ -110,18 +113,18 @@ public class Entity {
 	}
 
 	public boolean canMove(int direction) {
-		float thicknessOfBB = .01f;
+		boolean top = false, bottom = false;
 		if (direction == LEFT) {
-			boundingBox.set(getPosition().x, getPosition().y + thicknessOfBB, thicknessOfBB, getSize().y - 2 * thicknessOfBB);
+			top = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x, getPosition().y).isSolid();
+			bottom = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x, getPosition().y + 1).isSolid();
+			System.out.println("Left: " + top + bottom);
 		}
 		else
 			if (direction == RIGHT) {
-				boundingBox.set(getPosition().x + getSize().x - thicknessOfBB, getPosition().y + thicknessOfBB, thicknessOfBB, getSize().y - 2 * thicknessOfBB);
+				top = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x, getPosition().y).isSolid();
+				bottom = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x, getPosition().y + 1).isSolid();
 			}
-		for (Block block : GameWorld.world.getChunkHandler().getVisibleBlocks())
-			if (block.collides(boundingBox))
-				return false;
-		return true;
+		return top && bottom;
 	}
 
 	public void applyGravity(float deltaTime) {
@@ -150,7 +153,7 @@ public class Entity {
 				vel = 0;
 				if (!canFall) {
 					setPosition(getPosition().x, MathUtils.ceil(getPosition().y));
-					BlockType block = GameWorld.world.getChunkHandler().getBlockAtPos(MathUtils.floor(getPosition().x), Math.round(getPosition().y) - 1);
+					BlockType block = GameWorld.world.getChunkHandler().getBlockTypeAtPos(MathUtils.floor(getPosition().x), Math.round(getPosition().y) - 1);
 					setYVelocity((-getVelocity().y) * block.getBounciness());
 				}
 				else {
@@ -169,14 +172,11 @@ public class Entity {
 
 	}
 
-	public boolean isColliding() {
-		Array<Block> blocks = GameWorld.world.getChunkHandler().getVisibleBlocks();
-		Rectangle player = new Rectangle(getPosition().x + .000001f, getPosition().y, this.getSize().x - .000002f, this.getSize().y);
-		for (Block block : blocks) {
-			if (block.collides(player))
-				return true;
-		}
-		return false;
+	public boolean isColliding(Vector2 coordinates, Vector2 size) {
+		this.boundingBox.set(getPosition().x, getPosition().y, getSize().x, getSize().y);
+		Rectangle block = new Rectangle(coordinates.x, coordinates.y, size.x, size.y);
+		return block.overlaps(boundingBox);
+
 	}
 
 	public int getCurrentChunk() {
@@ -212,14 +212,14 @@ public class Entity {
 	}
 
 	public boolean canFall() {
-		boolean left = GameWorld.world.getChunkHandler().getBlockAtPos(getPosition().x, getPosition().y).equals(BlockType.AIR);
-		boolean right = GameWorld.world.getChunkHandler().getBlockAtPos(getPosition().x + getSize().x, getPosition().y).equals(BlockType.AIR);
+		boolean left = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x, getPosition().y).isSolid();
+		boolean right = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x, getPosition().y).isSolid();
 		return left && right;
 	}
 
 	public boolean canRise() {
-		boolean left = GameWorld.world.getChunkHandler().getBlockAtPos(getPosition().x, getPosition().y + getSize().y).equals(BlockType.AIR);
-		boolean right = GameWorld.world.getChunkHandler().getBlockAtPos(getPosition().x + getSize().x, getPosition().y + getSize().y).equals(BlockType.AIR);
+		boolean left = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x, getPosition().y + getSize().y).isSolid();
+		boolean right = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x, getPosition().y + getSize().y).isSolid();
 		return left && right;
 	}
 

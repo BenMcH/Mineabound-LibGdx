@@ -60,7 +60,6 @@ public class GameWorld implements Screen {
 		camera.update();
 		renderer.setProjectionMatrix(camera.combined);
 		renderer.begin();
-		float color = .1f;
 		chunkHandler.render(renderer);
 		entityHandler.render(renderer);
 		player.draw(renderer, player.getDirection());

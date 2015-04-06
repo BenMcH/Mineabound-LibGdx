@@ -1,13 +1,13 @@
 # Mineabound-LibGdx
 
-This is a 2d Voxel based game that draws inspiration from Minecraft, Terraria and Starbound written in LibGDX.
+This is a 2D Voxel based game that draws inspiration from Minecraft, Terraria and Starbound written in LibGDX.
 
 
 #TODO List
 ##Features:
 ###Health 
 * Fall Damage  
-* Damage from mobs/projectiles?  
+* Damage from mobs/projectiles
 * Harmful blocks?
 * Regeneration  
 
@@ -26,8 +26,9 @@ This is a 2d Voxel based game that draws inspiration from Minecraft, Terraria an
   * Health
   * Hunger?
   
-###Inventory GUI Popup 	
-  * Grid system with draggable components
+###In-Game GUI
+  * Pause Menu
+  * Inventory - Grid system with draggable components
 	
 ###Better Lighting
   * Day/Night Cycles

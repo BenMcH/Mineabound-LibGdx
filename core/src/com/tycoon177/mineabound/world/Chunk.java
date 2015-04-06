@@ -75,8 +75,6 @@ public class Chunk {
 	}
 
 	public boolean addBlock(int x, int y, BlockType type) {
-		if (GameWorld.world.getPlayer().isColliding())
-			return false;
 		if (block[x][y] != null) {
 			if (block[x][y].getBlockType() == BlockType.AIR) {
 				block[x][y].setBlockType(type);
@@ -86,7 +84,7 @@ public class Chunk {
 		}
 		else
 			block[x][y] = new Block(type, new Vector2(this.id * WIDTH + x, y));
-		if (GameWorld.world.getPlayer().isColliding()) {
+		if (GameWorld.world.getPlayer().isColliding(block[x][y].getPosition(), block[x][y].getSize())) {
 			removeBlock(x, y);
 			return false;
 		}

@@ -18,8 +18,9 @@ public class Player extends LivingEntity {
 	private Vector2 playerSize = new Vector2(.6f, 1.8f);
 	private OrthographicCamera headsUpDisplayCamera;
 	private boolean openInventory = false;
-	private Sprite inventoryGridPiece = TexturePack.getTexture("cell");
-	private Sprite selectedInventoryGridPiece = TexturePack.getTexture("selectedCell");
+	private Sprite hotbar = TexturePack.getTexture("hotbar");
+
+	private Sprite selected = TexturePack.getTexture("selectedCell");
 
 	public Player() {
 		super();
@@ -48,18 +49,24 @@ public class Player extends LivingEntity {
 	 *            The Spritebatch used for drawing
 	 */
 	public void drawHUD(SpriteBatch batch) {
+		float offset = 2.1f / 9f;
+		float size = 1 - (1 / 9f) * 4;
 		Matrix4 oldMat = batch.getProjectionMatrix().cpy();
 		batch.setProjectionMatrix(headsUpDisplayCamera.combined);
 		if (isInventoryOpen()) {
 			// Draw Inventory here!
 		}
+		batch.draw(hotbar, -headsUpDisplayCamera.viewportWidth / 4f, -headsUpDisplayCamera.viewportHeight / 2.1f, 9, 1);
+		float y = -headsUpDisplayCamera.viewportHeight / 2.1f + offset;
 		for (int i = 0; i < 9; i++) {
 			Sprite s = (Sprite) getHotbar()[i].getBlockType().getSprite();
-			batch.draw(i == getHotbarIndex() ? selectedInventoryGridPiece : inventoryGridPiece, i - headsUpDisplayCamera.viewportWidth / 4f, -headsUpDisplayCamera.viewportHeight / 2.1f, 1, 1);
+			float x = i + 1 - headsUpDisplayCamera.viewportWidth / 4f - .5f - size / 2f;
 			if (s != null)
-				batch.draw(s, i - headsUpDisplayCamera.viewportWidth / 4f + .01f, -headsUpDisplayCamera.viewportHeight / 2.1f + .01f, .98f, .98f);
+				batch.draw(s, x, y, size, size);
+			if (getHotbarIndex() == i) {
+				batch.draw(selected, i - headsUpDisplayCamera.viewportWidth / 4, -headsUpDisplayCamera.viewportHeight / 2.1f, 1, 1);
+			}
 		}
 		batch.setProjectionMatrix(oldMat);
 	}
-
 }
