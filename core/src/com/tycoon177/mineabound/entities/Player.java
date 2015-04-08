@@ -19,8 +19,10 @@ public class Player extends LivingEntity {
 	private OrthographicCamera headsUpDisplayCamera;
 	private boolean openInventory = false;
 	private Sprite hotbar = TexturePack.getTexture("hotbar");
-
 	private Sprite selected = TexturePack.getTexture("selectedCell");
+	private Sprite heart = TexturePack.getTexture("heart");
+	private Sprite halfHeart = TexturePack.getTexture("half_heart");
+	private Sprite emptyHeart = TexturePack.getTexture("empty_heart");
 
 	public Player() {
 		super();
@@ -57,11 +59,32 @@ public class Player extends LivingEntity {
 			// Draw Inventory here!
 		}
 		drawHotbar(batch, offset, size);
-		
+		drawHealth(batch, offset);
 		batch.setProjectionMatrix(oldMat);
 	}
-	
-	private void drawHotbar(SpriteBatch batch, float offset, float size){
+
+	private void drawHealth(SpriteBatch batch, float offset) {
+		Sprite s = heart;
+		float size = .25f;
+		float y = -headsUpDisplayCamera.viewportHeight / 2.1f + 1 + offset * 2f;
+		for (int i = 0; i < getMaxHealth() / 2; i++) {
+			float x = -headsUpDisplayCamera.viewportWidth * size + i * size * 1.25f;
+			if (i * 2 + 2 <= getHealth()) {
+				s = heart;
+			}
+			else {
+				if (i * 2 + 1 <= getHealth()) {
+					s = halfHeart;
+				}
+				else {
+					s = emptyHeart;
+				}
+			}
+			batch.draw(s, x, y, size, size);
+		}
+	}
+
+	private void drawHotbar(SpriteBatch batch, float offset, float size) {
 		batch.draw(hotbar, -headsUpDisplayCamera.viewportWidth / 4f, -headsUpDisplayCamera.viewportHeight / 2.1f, 9, 1);
 		float y = -headsUpDisplayCamera.viewportHeight / 2.1f + offset;
 		for (int i = 0; i < 9; i++) {
@@ -72,7 +95,7 @@ public class Player extends LivingEntity {
 		}
 		selected.setSize(1, 1);
 		selected.setPosition(getHotbarIndex() - headsUpDisplayCamera.viewportWidth / 4, -headsUpDisplayCamera.viewportHeight / 2.1f);
-		selected.setColor(.5f,.5f,.5f,.5f);
+		selected.setColor(.5f, .5f, .5f, .5f);
 		selected.draw(batch);
 	}
 }

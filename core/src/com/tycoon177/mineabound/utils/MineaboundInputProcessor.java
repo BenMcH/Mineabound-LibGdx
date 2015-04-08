@@ -48,6 +48,9 @@ public class MineaboundInputProcessor implements InputProcessor {
 				world.getEntityHandler().addEntity(r);
 				System.out.println("Added entity at " + r.getPosition());
 				break;
+			case Keys.K:
+				world.getPlayer().damage(1f);
+				break;
 		}
 
 		return true;

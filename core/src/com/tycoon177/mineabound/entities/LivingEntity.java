@@ -15,12 +15,13 @@ import com.tycoon177.mineabound.world.blocks.BlockType;
  */
 public class LivingEntity extends Entity {
 
-	private float health = 10;
 	private Entity[] inventory;
 	private Block[] hotbar;
 	private int hotbarIndex = 0;
 	private static final int INVENTORY_WIDTH = 10, INVENTORY_HEIGHT = 5;
 	private int direction = RIGHT;
+	private float maxHealth = 20f;
+	private float health = maxHealth;
 	public static final float JUMP_VELOCITY = 10f;
 	public static final float forceX = 6f;
 	public LivingEntity() {
@@ -113,5 +114,13 @@ public class LivingEntity extends Entity {
 	
 	public int getHotbarIndex(){
 		return hotbarIndex;
+	}
+	
+	public float getMaxHealth(){
+		return maxHealth;
+	}
+	
+	public void setMaxHealth(float max){
+		maxHealth = max;
 	}
 }
