@@ -36,10 +36,10 @@ public class MineaboundInputProcessor implements InputProcessor {
 				world.getPlayer().setDirection(Player.RIGHT);
 				break;
 			case Keys.W:
+			case Keys.SPACE:
 				jump = true;
 				break;
 			case Keys.SHIFT_LEFT:
-			case Keys.SHIFT_RIGHT:
 				shiftModifier = true;
 				break;
 			case Keys.L:

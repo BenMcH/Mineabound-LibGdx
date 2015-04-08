@@ -27,7 +27,7 @@ public class GameWorld implements Screen {
 	public static final float VIEWPORT_SIZE = 20;
 	private Music song;
 	private EntityHandler entityHandler = new EntityHandler();
-	
+
 	@Override
 	public void show() {
 
@@ -47,6 +47,12 @@ public class GameWorld implements Screen {
 		createInputProcessor();
 		chunkHandler = new ChunkHandler();
 		debugRenderer = new ShapeRenderer();
+		while (player.canFall()) {
+			player.setPosition(player.getPosition().x, player.getPosition().y - 1);
+		}
+		player.setPosition(player.getPosition().x, player.getPosition().y + 1);
+		player.resetFallHeight();
+		
 	}
 
 	private void createInputProcessor() {
@@ -111,12 +117,12 @@ public class GameWorld implements Screen {
 
 	@Override
 	public void pause() {
-		
+
 	}
 
 	@Override
 	public void resume() {
-		
+
 	}
 
 	@Override

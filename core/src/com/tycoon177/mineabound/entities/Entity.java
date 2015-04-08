@@ -22,14 +22,16 @@ public class Entity {
 	private int direction = RIGHT;
 	private float maxHealth = 20f;
 	private float health = maxHealth;
-
+	private float pixelOffset = 0;
 	private float width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
 	private Sprite sprite;
 	private Vector2 position;
 	private Vector2 velocity;
 	private Vector2 oldPosition;
 	private Rectangle boundingBox;
-
+	private float startOfFall;
+	private float healthRegenTimer = 0;
+	
 	public Entity() {
 		velocity = new Vector2();
 		position = new Vector2();
@@ -89,6 +91,7 @@ public class Entity {
 	}
 
 	public void update(float deltaTime) {
+		healthRegen(deltaTime);
 		applyGravity(deltaTime);
 		if (getVelocity().x == 0)
 			return;
@@ -115,17 +118,26 @@ public class Entity {
 		}
 	}
 
+	private void healthRegen(float deltaTime) {
+		healthRegenTimer += deltaTime;
+		System.out.println(healthRegenTimer);
+		if(healthRegenTimer >= 2.5f){
+			health += 1;
+			health = MathUtils.clamp(health, 0, getMaxHealth());
+			healthRegenTimer = 0;
+		}
+	}
+
 	public boolean canMove(int direction) {
 		boolean top = false, bottom = false;
 		if (direction == LEFT) {
-			top = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x, getPosition().y).isSolid();
-			bottom = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x, getPosition().y + 1).isSolid();
-			System.out.println("Left: " + top + bottom);
+			top = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + pixelOffset, getPosition().y).isSolid();
+			bottom = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + pixelOffset, getPosition().y + 1).isSolid();
 		}
 		else
 			if (direction == RIGHT) {
-				top = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x, getPosition().y).isSolid();
-				bottom = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x, getPosition().y + 1).isSolid();
+				top = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x - pixelOffset, getPosition().y).isSolid();
+				bottom = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x - pixelOffset, getPosition().y + 1).isSolid();
 			}
 		return top && bottom;
 	}
@@ -135,20 +147,19 @@ public class Entity {
 		boolean canRise = canRise();
 		velocity.y -= GRAVITY_FORCE * deltaTime;
 		velocity.y = MathUtils.clamp(velocity.y, -TERMINAL_VELOCITY, TERMINAL_VELOCITY);
-		float vel = velocity.y * deltaTime;
-		float direction = vel < 0 ? -1 : 1;
 		if (!canFall) {
 			setPosition(getPosition().x, MathUtils.ceil(getPosition().y));
+			setYVelocity(0);
+			startOfFall = getPosition().y;
 		}
+		float vel = velocity.y * deltaTime;
+		float direction = vel < 0 ? -1 : 1;
 		while (vel != 0) {
 			oldPosition.set(getPosition());
 			float amountToChangeBy = Math.abs(vel) >= STANDARD_CHANGE ? (direction * STANDARD_CHANGE) : vel;
-			// if (!canFall) {
-			// setYVelocity(0);
-			// vel = 0;
-			// }
 			if ((vel > 0 && canRise) || (vel < 0 && canFall)) {
 				updateLocation(new Vector2(0, amountToChangeBy));
+				if(getPosition().y > startOfFall) startOfFall = getPosition().y;
 				canFall = canFall();
 				canRise = canRise();
 			}
@@ -159,6 +170,14 @@ public class Entity {
 					BlockType block = GameWorld.world.getChunkHandler().getBlockTypeAtPos(MathUtils.floor(getPosition().x), Math.round(getPosition().y) - 1);
 					BlockType block2 = GameWorld.world.getChunkHandler().getBlockTypeAtPos(MathUtils.floor(getPosition().x + getSize().x), Math.round(getPosition().y) - 1);
 					setYVelocity((-getVelocity().y) * Math.max(block.getBounciness(), block2.getBounciness()));
+					if (Math.abs(getVelocity().y) < .01f) {
+						float fallDamage = Math.abs(startOfFall - getPosition().y) - 4; //-4 for a 3 block fall because where the feet are and where
+																						//the block under your feet are a 1 block difference 
+						if (fallDamage > 0) {
+							this.startOfFall = getPosition().y;
+							damage(fallDamage);
+						}
+					}
 				}
 				else {
 					setPosition(getPosition().x, MathUtils.floor(getPosition().y + getSize().y) - getSize().y - 1);
@@ -177,7 +196,7 @@ public class Entity {
 	}
 
 	public boolean isColliding(Vector2 coordinates, Vector2 size) {
-		this.boundingBox.set(getPosition().x, getPosition().y, getSize().x, getSize().y);
+		this.boundingBox.set(getPosition().x + pixelOffset, getPosition().y, getSize().x - pixelOffset * 2, getSize().y);
 		Rectangle block = new Rectangle(coordinates.x, coordinates.y, size.x, size.y);
 		return block.overlaps(boundingBox);
 
@@ -208,7 +227,7 @@ public class Entity {
 	}
 
 	public void debugRender(ShapeRenderer batch) {
-		batch.rect(position.x, position.y, width, height);
+		batch.rect(position.x + pixelOffset, position.y, width - pixelOffset * 2, height);
 	}
 
 	public Vector2 getVelocity() {
@@ -216,14 +235,14 @@ public class Entity {
 	}
 
 	public boolean canFall() {
-		boolean left = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x, getPosition().y).isSolid();
-		boolean right = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x, getPosition().y).isSolid();
+		boolean left = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + pixelOffset, getPosition().y).isSolid();
+		boolean right = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x - pixelOffset, getPosition().y).isSolid();
 		return left && right;
 	}
 
 	public boolean canRise() {
-		boolean left = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x, getPosition().y + getSize().y).isSolid();
-		boolean right = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x, getPosition().y + getSize().y).isSolid();
+		boolean left = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + pixelOffset, getPosition().y + getSize().y).isSolid();
+		boolean right = !GameWorld.world.getChunkHandler().getBlockTypeAtPos(getPosition().x + getSize().x - pixelOffset, getPosition().y + getSize().y).isSolid();
 		return left && right;
 	}
 
@@ -275,16 +294,7 @@ public class Entity {
 	}
 
 	public boolean canJump() {
-
-		float thicknessOfBB = .01f;
-
-		Array<Block> blocks = GameWorld.world.getChunkHandler().getVisibleBlocks();
-		Rectangle player = new Rectangle(getPosition().x + thicknessOfBB, getPosition().y - thicknessOfBB, this.getSize().x - thicknessOfBB * 2, this.getSize().y);
-		for (Block block : blocks) {
-			if (block.collides(player))
-				return true;
-		}
-		return false;
+		return getVelocity().y == 0f && canRise();
 	}
 
 	public float getMaxHealth() {
@@ -295,4 +305,11 @@ public class Entity {
 		maxHealth = max;
 	}
 
+	public void setPixelOffset(float offset) {
+		this.pixelOffset = offset;
+	}
+
+	public void resetFallHeight(){
+		startOfFall = getPosition().y;
+	}
 }

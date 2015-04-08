@@ -31,6 +31,7 @@ public class Player extends Entity {
 	public static final float JUMP_VELOCITY = 10f;
 	public static final float forceX = 6f;
 	private static final int INVENTORY_WIDTH = 10, INVENTORY_HEIGHT = 5;
+	
 
 	public Player() {
 		super();
@@ -48,6 +49,7 @@ public class Player extends Entity {
 		hotbar[7] = new Block(BlockType.AIR);
 		hotbar[8] = new Block(BlockType.AIR);
 		inventory = new Entity[INVENTORY_HEIGHT * INVENTORY_WIDTH];
+		setPixelOffset(.1f);
 	}
 
 	@Override

@@ -2,14 +2,16 @@
 
 This is a 2D Voxel based game that draws inspiration from Minecraft, Terraria and Starbound written in LibGDX.
 
+A full changelog can be found [here](CHANGELOG.md).
+
 
 #TODO List
 ##Features:
 ###Health 
-* Fall Damage  
+* ~~Fall Damage~~  
 * Damage from mobs/projectiles
 * Harmful blocks?
-* Regeneration  
+* ~~Regeneration~~  
 
 ###Mobs
 * Passive  
@@ -19,12 +21,12 @@ This is a 2D Voxel based game that draws inspiration from Minecraft, Terraria an
   * Doors (Open and closed)
 	
 ###Climable Blocks
-  * Ladders or Ropes?
+  * Ladders or Ropes
   
 ###HUD
   * ~~Hotbar~~
-  * Health
-  * Hunger?
+  * ~~Health~~
+  * Hunger
   
 ###In-Game GUI
   * Pause Menu
@@ -43,9 +45,13 @@ This is a 2D Voxel based game that draws inspiration from Minecraft, Terraria an
 ###Texture Packs
   * ~~Import static textures into the world.~~
   * Sky textures
-  * Player Model
+  * ~~Player Model~~
   * Animated Texture
+  * Better hitbox
+  * Animated moving
   
+###Player
+  * Sprinting
 
 ##Bugs:  
 ###~~Bedrock does not generate~~

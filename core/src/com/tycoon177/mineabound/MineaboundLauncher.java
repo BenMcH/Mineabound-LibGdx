@@ -18,13 +18,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.tycoon177.mineabound.utils.TexturePack;
 
 public class MineaboundLauncher extends Game {
+	public static final String CURRENT_GAME_VERSION = "v1.0";
 
 	public static boolean isDebugRendering = true;
 	public static final Color PLAYER_BOUNDING_BOX_COLOR = new Color(1, 0, 1, 1);
 	public static final Color BLOCK_BOUNDING_BOX_COLOR = Color.BLACK;
 	public static final Color ENTITY_BOUNDING_BOX_COLOR = Color.RED;
+	private static final String ASSETS_DOWNLOAD_LINK = "https://www.dropbox.com/s/shu85hh1xgmfzam/default.zip?dl=1";
 	public static FileHandle texturePacksDirectory;
-
 	public static Preferences preferences;
 
 	@Override
@@ -37,13 +38,13 @@ public class MineaboundLauncher extends Game {
 		FileHandle handle = Gdx.files.external(".mineabound");
 		texturePacksDirectory = handle.child("texture packs");
 		texturePacksDirectory.file().mkdirs();
-//		try {
-//			downloadDefaultAssets();
-//			unpackAssets();
-//			System.out.println("Here");
-//		} catch (IOException e) {
-//			System.out.println("Failed to setup the assets!");
-//		}
+		try {
+			downloadDefaultAssets();
+			unpackAssets();
+			System.out.println("Here");
+		} catch (IOException e) {
+			System.out.println("Failed to setup the assets!");
+		}
 	}
 
 	private void unpackAssets() {
@@ -101,7 +102,7 @@ public class MineaboundLauncher extends Game {
 		File f = new File("default.zip");
 		if (f.exists())
 			return;
-		URL website = new URL("https://www.dropbox.com/s/it4cxlwsmd43ruj/default.zip?dl=1");
+		URL website = new URL(ASSETS_DOWNLOAD_LINK);
 		ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 		FileOutputStream fos = new FileOutputStream("default.zip");
 		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
