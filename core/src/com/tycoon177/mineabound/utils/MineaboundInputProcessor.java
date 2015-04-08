@@ -5,8 +5,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.tycoon177.mineabound.MineaboundLauncher;
 import com.tycoon177.mineabound.entities.Entity;
-import com.tycoon177.mineabound.entities.LivingEntity;
 import com.tycoon177.mineabound.entities.Player;
 import com.tycoon177.mineabound.screens.GameWorld;
 import com.tycoon177.mineabound.world.blocks.Block;
@@ -28,11 +28,11 @@ public class MineaboundInputProcessor implements InputProcessor {
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
 			case Keys.A:
-				world.getPlayer().setXVelocity(-LivingEntity.forceX * (shiftModifier ? 1.5f : 1f));
+				world.getPlayer().setXVelocity(-Player.forceX * (shiftModifier ? 1.5f : 1f));
 				world.getPlayer().setDirection(Player.LEFT);
 				break;
 			case Keys.D:
-				world.getPlayer().setXVelocity(LivingEntity.forceX * (shiftModifier ? 1.5f : 1f));
+				world.getPlayer().setXVelocity(Player.forceX * (shiftModifier ? 1.5f : 1f));
 				world.getPlayer().setDirection(Player.RIGHT);
 				break;
 			case Keys.W:
@@ -46,10 +46,9 @@ public class MineaboundInputProcessor implements InputProcessor {
 				Entity r = new Entity(new Vector2(world.getPlayer().getPosition()), TexturePack.getTexture("bedrock"));
 				//r.setSize(2, 2);
 				world.getEntityHandler().addEntity(r);
-				System.out.println("Added entity at " + r.getPosition());
 				break;
-			case Keys.K:
-				world.getPlayer().damage(1f);
+			case Keys.F3:
+				MineaboundLauncher.isDebugRendering = !MineaboundLauncher.isDebugRendering;
 				break;
 		}
 

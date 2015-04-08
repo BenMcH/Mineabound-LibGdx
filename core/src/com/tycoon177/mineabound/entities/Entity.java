@@ -19,6 +19,9 @@ public class Entity {
 	public static final float TERMINAL_VELOCITY = 100f;
 	private static final float STANDARD_CHANGE = 0.125f;
 	public static final int RIGHT = 1, LEFT = 0;
+	private int direction = RIGHT;
+	private float maxHealth = 20f;
+	private float health = maxHealth;
 
 	private float width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
 	private Sprite sprite;
@@ -92,9 +95,9 @@ public class Entity {
 		float change = Math.abs(getVelocity().x) * deltaTime;
 		float vel = getVelocity().x * deltaTime;
 		float direction = vel > 0 ? 1 : -1;
-		if(vel != 0 && this instanceof Player)
-			((Player)this).setDirection(vel > 0 ? RIGHT : LEFT);
-			
+		if (vel != 0 && this instanceof Player)
+			((Player) this).setDirection(vel > 0 ? RIGHT : LEFT);
+
 		while (vel != 0) {
 			oldPosition.set(getPosition());
 			float amountToChangeBy = Math.abs(vel) >= change ? (direction * change) : vel;
@@ -241,6 +244,55 @@ public class Entity {
 
 	public void drawEntity(SpriteBatch renderer) {
 		renderer.draw(getSprite(), getPosition().x, getPosition().y, getSize().x, getSize().y);
+	}
+
+	public float getHealth() {
+		return health;
+	}
+
+	public void setHealth(float health) {
+		this.health = health;
+	}
+
+	public void damage(float amount) {
+		this.health -= Math.abs(amount);
+	}
+
+	public boolean isDead() {
+		return health <= 0;
+	}
+
+	public void kill() {
+		setHealth(0);
+	}
+
+	public int getDirection() {
+		return direction;
+	}
+
+	public void setDirection(int direction) {
+		this.direction = direction;
+	}
+
+	public boolean canJump() {
+
+		float thicknessOfBB = .01f;
+
+		Array<Block> blocks = GameWorld.world.getChunkHandler().getVisibleBlocks();
+		Rectangle player = new Rectangle(getPosition().x + thicknessOfBB, getPosition().y - thicknessOfBB, this.getSize().x - thicknessOfBB * 2, this.getSize().y);
+		for (Block block : blocks) {
+			if (block.collides(player))
+				return true;
+		}
+		return false;
+	}
+
+	public float getMaxHealth() {
+		return maxHealth;
+	}
+
+	public void setMaxHealth(float max) {
+		maxHealth = max;
 	}
 
 }

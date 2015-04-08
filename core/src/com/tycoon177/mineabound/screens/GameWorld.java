@@ -64,7 +64,7 @@ public class GameWorld implements Screen {
 		entityHandler.render(renderer);
 		player.draw(renderer, player.getDirection());
 		renderer.end();
-		if (MineaboundLauncher.IS_DEBUG_RENDERING) {
+		if (MineaboundLauncher.isDebugRendering) {
 			debugRenderer.setProjectionMatrix(camera.combined);
 			// Gdx.gl.glLineWidth(2f);
 			debugRenderer.begin(ShapeType.Line);

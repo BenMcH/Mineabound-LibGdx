@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.tycoon177.mineabound.utils.TexturePack;
+import com.tycoon177.mineabound.world.blocks.Block;
+import com.tycoon177.mineabound.world.blocks.BlockType;
 
 /**
  * This class handles the player interactions
@@ -13,22 +15,39 @@ import com.tycoon177.mineabound.utils.TexturePack;
  * @author Ben
  *
  */
-public class Player extends LivingEntity {
+public class Player extends Entity {
 	/** The default player size **/
 	private Vector2 playerSize = new Vector2(.6f, 1.8f);
 	private OrthographicCamera headsUpDisplayCamera;
 	private boolean openInventory = false;
-	private Sprite hotbar = TexturePack.getTexture("hotbar");
+	private Sprite hotbarTexture = TexturePack.getTexture("hotbar");
 	private Sprite selected = TexturePack.getTexture("selectedCell");
 	private Sprite heart = TexturePack.getTexture("heart");
 	private Sprite halfHeart = TexturePack.getTexture("half_heart");
 	private Sprite emptyHeart = TexturePack.getTexture("empty_heart");
+	private Entity[] inventory;
+	private Block[] hotbar;
+	private int hotbarIndex = 0;
+	public static final float JUMP_VELOCITY = 10f;
+	public static final float forceX = 6f;
+	private static final int INVENTORY_WIDTH = 10, INVENTORY_HEIGHT = 5;
 
 	public Player() {
 		super();
 		headsUpDisplayCamera = new OrthographicCamera(20, 10);
 		setSize(playerSize.x, playerSize.y);
 		this.setSprite(TexturePack.getTexture("playerStill"));
+		hotbar = new Block[9];
+		hotbar[0] = new Block(BlockType.BEDROCK);
+		hotbar[1] = new Block(BlockType.DIRT);
+		hotbar[2] = new Block(BlockType.GRASS);
+		hotbar[3] = new Block(BlockType.STONE);
+		hotbar[4] = new Block(BlockType.AIR);
+		hotbar[5] = new Block(BlockType.AIR);
+		hotbar[6] = new Block(BlockType.AIR);
+		hotbar[7] = new Block(BlockType.AIR);
+		hotbar[8] = new Block(BlockType.AIR);
+		inventory = new Entity[INVENTORY_HEIGHT * INVENTORY_WIDTH];
 	}
 
 	@Override
@@ -85,7 +104,7 @@ public class Player extends LivingEntity {
 	}
 
 	private void drawHotbar(SpriteBatch batch, float offset, float size) {
-		batch.draw(hotbar, -headsUpDisplayCamera.viewportWidth / 4f, -headsUpDisplayCamera.viewportHeight / 2.1f, 9, 1);
+		batch.draw(hotbarTexture, -headsUpDisplayCamera.viewportWidth / 4f, -headsUpDisplayCamera.viewportHeight / 2.1f, 9, 1);
 		float y = -headsUpDisplayCamera.viewportHeight / 2.1f + offset;
 		for (int i = 0; i < 9; i++) {
 			Sprite s = (Sprite) getHotbar()[i].getBlockType().getSprite();
@@ -95,7 +114,35 @@ public class Player extends LivingEntity {
 		}
 		selected.setSize(1, 1);
 		selected.setPosition(getHotbarIndex() - headsUpDisplayCamera.viewportWidth / 4, -headsUpDisplayCamera.viewportHeight / 2.1f);
-		selected.setColor(.5f, .5f, .5f, .5f);
+		selected.setColor(1, 1, 1, .5f);
 		selected.draw(batch);
+	}
+
+	public Entity getItemFromInventory(int xLoc, int yLoc) {
+		if (xLoc < 0 || yLoc < 0 || xLoc >= INVENTORY_WIDTH || yLoc >= INVENTORY_HEIGHT) {
+			return null;
+		}
+		return inventory[xLoc + yLoc * INVENTORY_WIDTH];
+	}
+
+	public Block[] getHotbar() {
+		return hotbar;
+	}
+
+	public void jump() {
+		if (canJump())
+			setYVelocity(JUMP_VELOCITY);
+	}
+	
+	public void moveHotbarIndex(int amount){
+		this.hotbarIndex += amount;
+		if(hotbarIndex <= 0){
+			hotbarIndex = hotbar.length-1;
+		}
+		hotbarIndex %= hotbar.length;
+	}
+	
+	public int getHotbarIndex(){
+		return hotbarIndex;
 	}
 }
