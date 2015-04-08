@@ -56,6 +56,12 @@ public class Player extends LivingEntity {
 		if (isInventoryOpen()) {
 			// Draw Inventory here!
 		}
+		drawHotbar(batch, offset, size);
+		
+		batch.setProjectionMatrix(oldMat);
+	}
+	
+	private void drawHotbar(SpriteBatch batch, float offset, float size){
 		batch.draw(hotbar, -headsUpDisplayCamera.viewportWidth / 4f, -headsUpDisplayCamera.viewportHeight / 2.1f, 9, 1);
 		float y = -headsUpDisplayCamera.viewportHeight / 2.1f + offset;
 		for (int i = 0; i < 9; i++) {
@@ -63,10 +69,10 @@ public class Player extends LivingEntity {
 			float x = i + 1 - headsUpDisplayCamera.viewportWidth / 4f - .5f - size / 2f;
 			if (s != null)
 				batch.draw(s, x, y, size, size);
-			if (getHotbarIndex() == i) {
-				batch.draw(selected, i - headsUpDisplayCamera.viewportWidth / 4, -headsUpDisplayCamera.viewportHeight / 2.1f, 1, 1);
-			}
 		}
-		batch.setProjectionMatrix(oldMat);
+		selected.setSize(1, 1);
+		selected.setPosition(getHotbarIndex() - headsUpDisplayCamera.viewportWidth / 4, -headsUpDisplayCamera.viewportHeight / 2.1f);
+		selected.setColor(.5f,.5f,.5f,.5f);
+		selected.draw(batch);
 	}
 }
