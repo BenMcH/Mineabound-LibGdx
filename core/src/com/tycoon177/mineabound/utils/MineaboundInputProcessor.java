@@ -44,7 +44,6 @@ public class MineaboundInputProcessor implements InputProcessor {
 				break;
 			case Keys.L:
 				Entity r = new Entity(new Vector2(world.getPlayer().getPosition()), TexturePack.getTexture("bedrock"));
-				//r.setSize(2, 2);
 				world.getEntityHandler().addEntity(r);
 				break;
 			case Keys.F3:

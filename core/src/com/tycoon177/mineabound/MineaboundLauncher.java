@@ -37,13 +37,13 @@ public class MineaboundLauncher extends Game {
 		FileHandle handle = Gdx.files.external(".mineabound");
 		texturePacksDirectory = handle.child("texture packs");
 		texturePacksDirectory.file().mkdirs();
-		try {
-			downloadDefaultAssets();
-			unpackAssets();
-			System.out.println("Here");
-		} catch (IOException e) {
-			System.out.println("Failed to setup the assets!");
-		}
+//		try {
+//			downloadDefaultAssets();
+//			unpackAssets();
+//			System.out.println("Here");
+//		} catch (IOException e) {
+//			System.out.println("Failed to setup the assets!");
+//		}
 	}
 
 	private void unpackAssets() {
