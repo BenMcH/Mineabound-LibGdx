@@ -5,7 +5,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.tycoon177.mineabound.screens.GameWorld;
-import com.tycoon177.mineabound.utils.PerlinNoiseGenerator;
+import com.tycoon177.mineabound.utils.world.CellularAutomata;
+import com.tycoon177.mineabound.utils.world.PerlinNoiseGenerator;
 import com.tycoon177.mineabound.world.blocks.Block;
 import com.tycoon177.mineabound.world.blocks.BlockType;
 
@@ -23,16 +24,15 @@ public class Chunk {
 	public static int WIDTH = 16, HEIGHT = 256;
 	private int id;
 
-	
 	// Frequency = features. Higher = more features
 	// Weight = smoothness. Higher frequency = more smoothness
 	private static final float HEIGHT_FREQ = 0.3f;
 	private static final float HEIGHT_WEIGHT = 3f;
-	private static final float CAVE_FREQ = 0.45f;
-	private static final float CAVE_WEIGHT = 2f;
+	// private static final float CAVE_FREQ = 0.45f;
+	// private static final float CAVE_WEIGHT = 2f;
 	private static final float BEDROCK_FREQ = 0.3f;
 	private static final float BEDROCK_WEIGHT = 1f;
-	
+
 	public Chunk(int id) {
 		this.id = id;
 		generateChunk();
@@ -136,13 +136,13 @@ public class Chunk {
 	 */
 
 	private void generateChunk() {
-
+		CellularAutomata cells = new CellularAutomata();
 		int chunkHeight = getCurrentHeight(id, heightMap);
 		int bedrockHeightMap = getCurrentHeight(id, bedrockNoise, 1, 3, 1, BEDROCK_FREQ, BEDROCK_WEIGHT);
 		float[] heightNoise = generate1DNoise(id, heightMap, HEIGHT_FREQ, HEIGHT_WEIGHT);
 		float[] bedrockNoiseMap = generate1DNoise(id, bedrockNoise, BEDROCK_FREQ, BEDROCK_WEIGHT);
 		block = new Block[WIDTH][HEIGHT];
-		float[][] caveNoise = generate2DNoise(id, caveNoiseGen, CAVE_FREQ, CAVE_WEIGHT);
+		// float[][] caveNoise = generate2DNoise(id, caveNoiseGen, CAVE_FREQ, CAVE_WEIGHT);
 		for (int x = 0; x < WIDTH; x++) {
 			for (int y = 0; y < HEIGHT; y++) {
 				BlockType type = BlockType.AIR;
@@ -151,7 +151,7 @@ public class Chunk {
 				if (y <= bedrockHeightMap)
 					type = BlockType.BEDROCK;
 				block[x][y] = new Block(type, new Vector2(this.id * WIDTH + x, y));
-				if (caveNoise[x][y] > .1f) {
+				if (cells.getValue(x, y) == 0) {
 					block[x][y].setBlockType(BlockType.AIR);
 				}
 				else
@@ -206,6 +206,22 @@ public class Chunk {
 
 		return noise;
 
+	}
+
+	public boolean addBlock(int x, int y, Block nBlock) {
+		if (nBlock == null)
+			return false;
+		nBlock.setLocation(x, y);
+
+		if (block[x][y] == null || block[x][y].getBlockType() == BlockType.AIR) {
+			block[x][y] = nBlock;
+		}
+		if (block[x][y] != null)
+			if (GameWorld.world.getPlayer().isColliding(block[x][y].getPosition(), block[x][y].getSize())) {
+				removeBlock(x, y);
+				return false;
+			}
+		return true;
 	}
 
 }

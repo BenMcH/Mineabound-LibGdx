@@ -31,7 +31,6 @@ public class Player extends Entity {
 	public static final float JUMP_VELOCITY = 10f;
 	public static final float forceX = 6f;
 	private static final int INVENTORY_WIDTH = 10, INVENTORY_HEIGHT = 5;
-	
 
 	public Player() {
 		super();
@@ -88,7 +87,7 @@ public class Player extends Entity {
 		Sprite s = heart;
 		float size = .25f;
 		float y = -headsUpDisplayCamera.viewportHeight / 2f + offset * 7f;
-		float x = -headsUpDisplayCamera.viewportWidth/4f + 9f/4f;
+		float x = -headsUpDisplayCamera.viewportWidth / 4f + 9f / 4f;
 		for (int i = 0; i < getMaxHealth() / 2; i++) {
 			float nx = x + size * 1.25f * i;
 			if (i * 2 + 2 <= getHealth()) {
@@ -119,7 +118,7 @@ public class Player extends Entity {
 			if (s != null)
 				batch.draw(s, nx, y + offset, size, size);
 		}
-		selected.setSize(width/9f, height);
+		selected.setSize(width / 9f, height);
 		selected.setPosition(x + getHotbarIndex(), y);
 		selected.setAlpha(.5f);
 		selected.draw(batch);
@@ -151,5 +150,9 @@ public class Player extends Entity {
 
 	public int getHotbarIndex() {
 		return hotbarIndex;
+	}
+
+	public BlockType getHeldItem() {
+		return getHotbar()[getHotbarIndex()].getBlockType();
 	}
 }

@@ -1,4 +1,4 @@
-package com.tycoon177.mineabound.utils;
+package com.tycoon177.mineabound.utils.world;
 
 import com.badlogic.gdx.math.MathUtils;
 

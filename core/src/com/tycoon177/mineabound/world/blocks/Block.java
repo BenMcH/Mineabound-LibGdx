@@ -11,7 +11,7 @@ public class Block {
 	private Vector2 position;
 	private boolean isActive = false;
 	private Vector2 size;
-	
+	private boolean isSolid;
 	public Block(BlockType type, Vector2 position) {
 		this(type);
 		this.position.set(position);
@@ -21,6 +21,7 @@ public class Block {
 	public Block(BlockType type) {
 		this();
 		this.type = type;
+		isSolid = type.isSolid();
 	}
 
 	public Block() {
@@ -61,7 +62,7 @@ public class Block {
 	public boolean isShown(Vector2 topLeft, Vector2 size) {
 		Rectangle rect = new Rectangle(getPosition().x, getPosition().y, this.size.x, this.size.y);
 		// Gets the Block as a rectangle
-		Rectangle screen = new Rectangle(topLeft.x - size.x * 3, topLeft.y - size.y * 3, size.x + size.x * 6, size.y + size.y * 6);
+		Rectangle screen = new Rectangle(topLeft.x - getSize().x * 3, topLeft.y - getSize().y * 3, size.x + getSize().x * 6, size.y + getSize().y * 6);
 		// Gets the screen coordinates plus about 3 blocks outside to assure that there are no rendering mistakes
 		return rect.overlaps(screen);
 	}
@@ -82,7 +83,7 @@ public class Block {
 		this.isActive = isActive;
 	}
 	
-	public boolean getIsActive(){
+	public boolean isActive(){
 		return isActive;
 	}
 	
@@ -96,5 +97,24 @@ public class Block {
 	public Vector2 getSize() {
 		return size;
 	}
+	
+	public void setSize(float width, float height){
+		size.set(width, height);
+	}
+	
+	public void setSize(Vector2 size){
+		setSize(size.x, size.y);
+	}
+	
+	public boolean isSolid(){
+		return isSolid;
+	}
+	
+	public void setSolid(boolean solid){
+		isSolid = solid;
+	}
 
+	public void setLocation(int x, int y) {
+		this.position.set(x,y);
+	}
 }

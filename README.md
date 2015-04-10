@@ -7,31 +7,33 @@ A full changelog can be found [here](CHANGELOG.md).
 
 #TODO List
 ##Features:
-###Health 
+###Health
 * ~~Fall Damage~~  
 * Damage from mobs/projectiles
 * Harmful blocks?
 * ~~Regeneration~~  
 
 ###Mobs
-* Passive  
-* Hostile
+  * Passive  
+  * Hostile
+  * Pathfinding
 
 ###Blocks with State
   * Doors (Open and closed)
-	
+
 ###Climable Blocks
   * Ladders or Ropes
-  
+
 ###HUD
   * ~~Hotbar~~
   * ~~Health~~
   * Hunger
-  
+
 ###In-Game GUI
   * Pause Menu
   * Inventory - Grid system with draggable components
-	
+  * Options Menu
+
 ###Better Lighting
   * Day/Night Cycles
   * Torches
@@ -41,7 +43,7 @@ A full changelog can be found [here](CHANGELOG.md).
   * Steps
   * Blocks Created
   * Blocks destroyed
-  
+
 ###Texture Packs
   * ~~Import static textures into the world.~~
   * Sky textures
@@ -49,13 +51,21 @@ A full changelog can be found [here](CHANGELOG.md).
   * Animated Texture
   * Better hitbox
   * Animated moving
-  
+
 ###Player
   * Sprinting
+
+###Misc
+  * Saving/Loading
+  * Tools
+
+###World
+  * Durability of blocks
+  * Ability to pick up dropped entities
+  * Ore generation
+  * Liquid
 
 ##Bugs:  
 ###~~Bedrock does not generate~~
 ###~~Jumping on the side of a block causes massive slowdown.~~
-###~~Player Gravity stronger when entities are spawned~~	
-
-
+###~~Player Gravity stronger when entities are spawned~~

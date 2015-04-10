@@ -120,8 +120,7 @@ public class Entity {
 
 	private void healthRegen(float deltaTime) {
 		healthRegenTimer += deltaTime;
-		System.out.println(healthRegenTimer);
-		if(healthRegenTimer >= 2.5f){
+		if(healthRegenTimer >= 4f){
 			health += 1;
 			health = MathUtils.clamp(health, 0, getMaxHealth());
 			healthRegenTimer = 0;

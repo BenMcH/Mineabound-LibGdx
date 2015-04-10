@@ -15,17 +15,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.tycoon177.mineabound.screens.MainMenu;
 import com.tycoon177.mineabound.utils.TexturePack;
 
 public class MineaboundLauncher extends Game {
 	public static final String CURRENT_GAME_VERSION = "v1.0";
 
-	public static boolean isDebugRendering = true;
+	public static boolean isDebugRendering = false;
 	public static final Color PLAYER_BOUNDING_BOX_COLOR = new Color(1, 0, 1, 1);
 	public static final Color BLOCK_BOUNDING_BOX_COLOR = Color.BLACK;
 	public static final Color ENTITY_BOUNDING_BOX_COLOR = Color.RED;
 	private static final String ASSETS_DOWNLOAD_LINK = "https://www.dropbox.com/s/shu85hh1xgmfzam/default.zip?dl=1";
 	public static FileHandle texturePacksDirectory;
+	public static String preferencesDirectory = "mineabound" + File.separator;
 	public static Preferences preferences;
 
 	@Override
@@ -41,7 +43,6 @@ public class MineaboundLauncher extends Game {
 		try {
 			downloadDefaultAssets();
 			unpackAssets();
-			System.out.println("Here");
 		} catch (IOException e) {
 			System.out.println("Failed to setup the assets!");
 		}

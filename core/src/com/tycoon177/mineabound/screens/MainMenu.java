@@ -1,4 +1,4 @@
-package com.tycoon177.mineabound;
+package com.tycoon177.mineabound.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -10,17 +10,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisTextButton;
-import com.tycoon177.mineabound.screens.GameWorld;
+import com.tycoon177.mineabound.MineaboundLauncher;
 import com.tycoon177.mineabound.utils.TexturePack;
+import com.tycoon177.mineabound.utils.input.KeyBindings;
 
 public class MainMenu implements Screen {
 	private Stage stage;
 	private Table table;
-	private VisTextButton play, exit;
+	private VisTextButton play, options, exit;
 
 	@Override
 	public void show() {
 		MineaboundLauncher.preferences = Gdx.app.getPreferences("mineabound_settings");
+		KeyBindings.loadBindings();
+		KeyBindings.saveBindings();
 		TexturePack.init();
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
@@ -36,6 +39,12 @@ public class MainMenu implements Screen {
 				((Game) Gdx.app.getApplicationListener()).setScreen(new GameWorld());
 			}
 		});
+		options = new VisTextButton("Options");
+		options.addListener(new ClickListener(){
+			public void clicked(InputEvent event, float x, float y) {
+				((Game) Gdx.app.getApplicationListener()).setScreen(new ControlsMenu());
+			}
+		});
 		exit = new VisTextButton("Exit");
 		exit.addListener(new ClickListener() {
 
@@ -45,6 +54,7 @@ public class MainMenu implements Screen {
 			}
 		});
 		table.add(play).pad(10).expand(true, false).fill(true, false).row();
+		table.add(options).pad(10).expand(true, false).fill(true, false).row();
 		table.add(exit).pad(10).expand(true, false).fill(true, false).row();
 		stage.addActor(table);
 	}

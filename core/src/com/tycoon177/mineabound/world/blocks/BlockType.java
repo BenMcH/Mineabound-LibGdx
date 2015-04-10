@@ -8,13 +8,13 @@ public enum BlockType {
 	STONE(1,"stone"),
 	GRASS(2,"grass_side"),
 	DIRT(3, "dirt"), 
-	BEDROCK(7, "bedrock");
+	BEDROCK(7, "bedrock"), 
+	DOOR(64, "door");
 
 	private int id;
 	private String name;
 	private float bounciness;
 	private boolean solid;
-	
 	private BlockType(int id, String texture){
 		this.id = id;
 		this.bounciness = 0;
