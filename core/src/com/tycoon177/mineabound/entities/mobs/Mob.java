@@ -13,6 +13,7 @@ public abstract class Mob extends Entity {
 
 	public Mob() {
 		super();
+		setLiving(true);
 	}
 
 	public Mob(Vector2 vec2, Sprite sprite) {

@@ -4,8 +4,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import com.tycoon177.mineabound.entities.utils.Inventory;
+import com.tycoon177.mineabound.screens.GameWorld;
 import com.tycoon177.mineabound.utils.TexturePack;
+import com.tycoon177.mineabound.utils.interfaces.Droppable;
 import com.tycoon177.mineabound.world.blocks.Block;
 import com.tycoon177.mineabound.world.blocks.BlockType;
 
@@ -18,19 +23,18 @@ import com.tycoon177.mineabound.world.blocks.BlockType;
 public class Player extends Entity {
 	/** The default player size **/
 	private Vector2 playerSize = new Vector2(.45f, 1.8f);
-	private OrthographicCamera headsUpDisplayCamera;
+	public OrthographicCamera headsUpDisplayCamera;
 	private boolean openInventory = false;
 	private Sprite hotbarTexture = TexturePack.getTexture("hotbar");
 	private Sprite selected = TexturePack.getTexture("selectedCell");
 	private Sprite heart = TexturePack.getTexture("heart");
 	private Sprite halfHeart = TexturePack.getTexture("half_heart");
 	private Sprite emptyHeart = TexturePack.getTexture("empty_heart");
-	private Entity[] inventory;
+	private Inventory inventory;
 	private Block[] hotbar;
 	private int hotbarIndex = 0;
 	public static final float JUMP_VELOCITY = 10f;
 	public static final float forceX = 6f;
-	private static final int INVENTORY_WIDTH = 10, INVENTORY_HEIGHT = 5;
 
 	public Player() {
 		super();
@@ -47,8 +51,11 @@ public class Player extends Entity {
 		hotbar[6] = new Block(BlockType.AIR);
 		hotbar[7] = new Block(BlockType.AIR);
 		hotbar[8] = new Block(BlockType.AIR);
-		inventory = new Entity[INVENTORY_HEIGHT * INVENTORY_WIDTH];
+		inventory = new Inventory();
+		inventory.set(0, 0, new Entity(new Vector2(), (Sprite)BlockType.BEDROCK.getSprite()));
+		System.out.println(inventory.getStack(0, 0).getType());
 		setPixelOffset(.1f);
+		setLiving(true);
 	}
 
 	@Override
@@ -77,8 +84,9 @@ public class Player extends Entity {
 		batch.setProjectionMatrix(headsUpDisplayCamera.combined);
 		if (isInventoryOpen()) {
 			// Draw Inventory here!
+			drawInventory(batch, size);
 		}
-		drawHotbar(batch, offset, size);
+		drawHotbar(batch, size);
 		drawHealth(batch, offset);
 		batch.setProjectionMatrix(oldMat);
 	}
@@ -105,18 +113,17 @@ public class Player extends Entity {
 		}
 	}
 
-	private void drawHotbar(SpriteBatch batch, float offset, float size) {
-
+	private void drawHotbar(SpriteBatch batch, float size) {
 		float width = 9f;
 		float height = 1f;
 		float x = -headsUpDisplayCamera.viewportWidth / 4f + width / 4f;
-		float y = -headsUpDisplayCamera.viewportHeight / 2f + 2 * offset;
+		float y = -headsUpDisplayCamera.viewportHeight / 2f + (height - size);
 		batch.draw(hotbarTexture, x, y, width, height);
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < width; i++) {
 			Sprite s = (Sprite) getHotbar()[i].getBlockType().getSprite();
-			float nx = (i + 1) + x - .5f - size / 2f;
+			float nx = i + x + (1 - size) / 2f;
 			if (s != null)
-				batch.draw(s, nx, y + offset, size, size);
+				batch.draw(s, nx, y + (height - size) / 2f, size, size);
 		}
 		selected.setSize(width / 9f, height);
 		selected.setPosition(x + getHotbarIndex(), y);
@@ -124,11 +131,12 @@ public class Player extends Entity {
 		selected.draw(batch);
 	}
 
+	private void drawInventory(SpriteBatch batch, float size) {
+		inventory.draw(batch, size);
+	}
+
 	public Entity getItemFromInventory(int xLoc, int yLoc) {
-		if (xLoc < 0 || yLoc < 0 || xLoc >= INVENTORY_WIDTH || yLoc >= INVENTORY_HEIGHT) {
-			return null;
-		}
-		return inventory[xLoc + yLoc * INVENTORY_WIDTH];
+		return inventory.get(xLoc, yLoc);
 	}
 
 	public Block[] getHotbar() {
@@ -154,5 +162,40 @@ public class Player extends Entity {
 
 	public BlockType getHeldItem() {
 		return getHotbar()[getHotbarIndex()].getBlockType();
+	}
+	
+	public Droppable getHeldDroppable(){
+		return getHotbar()[getHotbarIndex()];
+	}
+
+	@Override
+	public void update(float delta) {
+		super.update(delta);
+		Rectangle hitbox = getHitBox();
+		Array<Entity> en = GameWorld.world.getEntityHandler().getVisibleEntities();
+		for (Entity ent : en) {
+			if (hitbox.overlaps(ent.getHitBox())) {
+				pickUp(ent);
+			}
+		}
+	}
+
+	private void pickUp(Entity ent) {
+		// Put the entity in the inventory
+		GameWorld.world.getEntityHandler().removeEntity(ent);
+
+	}
+	
+	public void drop(){
+		Vector2 position = new Vector2(getPosition().x + getSize().x * 2, getPosition().y + Player.DEFAULT_HEIGHT/2f);
+		Vector2 velocity = new Vector2(1, 1);
+		Entity droppedItem = new Entity(position, getHeldDroppable());
+		droppedItem.setVelocity(velocity);
+		GameWorld.world.getEntityHandler().addEntity(droppedItem);
+
+	}
+	
+	public Inventory getInventory(){
+		return inventory;
 	}
 }

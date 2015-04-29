@@ -13,6 +13,12 @@ public class CellularAutomata {
 	private int height = Chunk.HEIGHT;
 	private float chance = .8f;
 
+	/**
+	 * Creates a "board" for cellular automation with conways game of life type systems
+	 * 
+	 * @param width
+	 * @param height
+	 */
 	public CellularAutomata(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -21,10 +27,16 @@ public class CellularAutomata {
 		randomBoard();
 	}
 
+	/**
+	 * Creates the board with the size being that of a chunk.
+	 */
 	public CellularAutomata() {
 		this(Chunk.WIDTH, Chunk.HEIGHT);
 	}
 
+	/**
+	 * Resets every value to false
+	 */
 	public void resetBoard() {
 		if (board == null) {
 			board = new boolean[width * height];
@@ -36,6 +48,9 @@ public class CellularAutomata {
 			}
 	}
 
+	/**
+	 * Generates a random board for better chunk generation
+	 */
 	private void randomBoard() {
 		resetBoard();
 		for (int i = 0; i < board.length; i++) {
@@ -44,6 +59,13 @@ public class CellularAutomata {
 		step();
 	}
 
+	/**
+	 * Returns the number of neighbors that are alive next to the current cell
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public int getNeighbors(int x, int y) {
 		int neighbors = 0;
 		int locInArr = y * width + x;
@@ -63,7 +85,14 @@ public class CellularAutomata {
 		return neighbors;
 	}
 
-	public int getValue(int x, int y) {
+	/**
+	 * Returns 0 if it is "dead" or 1 if true. This is used to count neighbors easier
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	private int getValue(int x, int y) {
 		int locInArr = y * width + x;
 		if (locInArr < board.length && locInArr >= 0) {
 			return board[locInArr] ? 1 : 0;
@@ -71,10 +100,20 @@ public class CellularAutomata {
 		return 0;
 	}
 
+	/**
+	 * returns whether or not the current cell is "alive"
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public boolean isAlive(int x, int y) {
-		return getValue(x, y) > 0;
+		return getValue(x, y) == 1;
 	}
 
+	/**
+	 * Does one iteration of the cellular automata
+	 */
 	private void step() {
 
 		boolean[] newBoard = new boolean[board.length];
@@ -94,18 +133,31 @@ public class CellularAutomata {
 		board = newBoard;
 	}
 
+	/**
+	 * Sets the amount of neighbors that will keep the cells alive
+	 * 
+	 * @param a
+	 */
 	public void setStayAliveRules(int... a) {
 		stayAlive = new Array<Integer>();
 		for (int i : a)
 			stayAlive.add(i);
 	}
 
+	/**
+	 * Sets the amount of neighbors that will bring the cells to life
+	 * 
+	 * @param a
+	 */
 	public void setComeAliveRules(int... a) {
 		comeAlive = new Array<Integer>();
 		for (int i : a)
 			comeAlive.add(i);
 	}
 
+	/**
+	 * Sets the rules back to default.
+	 */
 	public void setDefaultRules() {
 		setStayAliveRules(7, 6, 5, 4);
 		setComeAliveRules(1, 2, 3, 4, 5, 6, 7, 8);

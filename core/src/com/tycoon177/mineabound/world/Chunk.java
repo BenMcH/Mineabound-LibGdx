@@ -23,13 +23,13 @@ public class Chunk {
 	private Block[][] block;
 	public static int WIDTH = 16, HEIGHT = 256;
 	private int id;
-
+	private boolean usingCellularAutomata = true;
 	// Frequency = features. Higher = more features
 	// Weight = smoothness. Higher frequency = more smoothness
 	private static final float HEIGHT_FREQ = 0.3f;
 	private static final float HEIGHT_WEIGHT = 3f;
-	// private static final float CAVE_FREQ = 0.45f;
-	// private static final float CAVE_WEIGHT = 2f;
+	private static final float CAVE_FREQ = 0.45f;
+	private static final float CAVE_WEIGHT = 2f;
 	private static final float BEDROCK_FREQ = 0.3f;
 	private static final float BEDROCK_WEIGHT = 1f;
 
@@ -68,10 +68,10 @@ public class Chunk {
 	}
 
 	public void removeBlock(int x, int y) {
-		if (block[x][y] != null)
-			block[x][y].setBlockType(BlockType.AIR);
-		else
-			block[x][y] = new Block(BlockType.AIR, new Vector2(this.id * WIDTH + x, y));
+		if (block[x][y].getBlockType() != BlockType.AIR) {
+			block[x][y].onDestroy();
+		}
+		block[x][y] = new Block(BlockType.AIR, new Vector2(this.id * WIDTH + x, y));
 	}
 
 	public boolean addBlock(int x, int y, BlockType type) {
@@ -84,6 +84,26 @@ public class Chunk {
 		}
 		else
 			block[x][y] = new Block(type, new Vector2(this.id * WIDTH + x, y));
+		if (GameWorld.world.getPlayer().isColliding(block[x][y].getPosition(), block[x][y].getSize())) {
+			removeBlock(x, y);
+			return false;
+		}
+		return true;
+	}
+
+	public boolean addBlock(int x, int y, Block nBlock) {
+		if (nBlock == null)
+			return false;
+		if (block[x][y].getBlockType() == BlockType.AIR || block[x][y] == null) {
+			try {
+				block[x][y] = (Block) nBlock.getClassName().newInstance();
+				block[x][y].setLocation(this.id * WIDTH + x, y);
+				block[x][y].setAdditionalAtributes(nBlock);
+			} catch (Exception e) {
+				// This should never be reached as the constructors will be public
+				e.printStackTrace();
+			}
+		}
 		if (GameWorld.world.getPlayer().isColliding(block[x][y].getPosition(), block[x][y].getSize())) {
 			removeBlock(x, y);
 			return false;
@@ -142,7 +162,7 @@ public class Chunk {
 		float[] heightNoise = generate1DNoise(id, heightMap, HEIGHT_FREQ, HEIGHT_WEIGHT);
 		float[] bedrockNoiseMap = generate1DNoise(id, bedrockNoise, BEDROCK_FREQ, BEDROCK_WEIGHT);
 		block = new Block[WIDTH][HEIGHT];
-		// float[][] caveNoise = generate2DNoise(id, caveNoiseGen, CAVE_FREQ, CAVE_WEIGHT);
+		float[][] caveNoise = generate2DNoise(id, caveNoiseGen, CAVE_FREQ, CAVE_WEIGHT);
 		for (int x = 0; x < WIDTH; x++) {
 			for (int y = 0; y < HEIGHT; y++) {
 				BlockType type = BlockType.AIR;
@@ -151,12 +171,21 @@ public class Chunk {
 				if (y <= bedrockHeightMap)
 					type = BlockType.BEDROCK;
 				block[x][y] = new Block(type, new Vector2(this.id * WIDTH + x, y));
-				if (cells.getValue(x, y) == 0) {
+				boolean delete = false;
+				if (usingCellularAutomata) {
+					delete = !cells.isAlive(x, y);
+				}
+				else {
+					// TODO: Tries index -1
+					delete = caveNoise[x][y] < .5f;
+				}
+				if (delete) {
 					block[x][y].setBlockType(BlockType.AIR);
 				}
 				else
-					if (y == chunkHeight - 1)
+					if (y == chunkHeight - 1) {
 						block[x][y].setBlockType(BlockType.GRASS);
+					}
 			}
 
 			chunkHeight += (heightNoise[x]);
@@ -206,22 +235,6 @@ public class Chunk {
 
 		return noise;
 
-	}
-
-	public boolean addBlock(int x, int y, Block nBlock) {
-		if (nBlock == null)
-			return false;
-		nBlock.setLocation(x, y);
-
-		if (block[x][y] == null || block[x][y].getBlockType() == BlockType.AIR) {
-			block[x][y] = nBlock;
-		}
-		if (block[x][y] != null)
-			if (GameWorld.world.getPlayer().isColliding(block[x][y].getPosition(), block[x][y].getSize())) {
-				removeBlock(x, y);
-				return false;
-			}
-		return true;
 	}
 
 }

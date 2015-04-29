@@ -32,7 +32,7 @@ A full changelog can be found [here](CHANGELOG.md).
 ###In-Game GUI
   * Pause Menu
   * Inventory - Grid system with draggable components
-  * Options Menu
+  * Options Menu - Better
 
 ###Better Lighting
   * Day/Night Cycles
@@ -54,6 +54,7 @@ A full changelog can be found [here](CHANGELOG.md).
 
 ###Player
   * Sprinting
+  * Crafting
 
 ###Misc
   * Saving/Loading
@@ -64,6 +65,10 @@ A full changelog can be found [here](CHANGELOG.md).
   * Ability to pick up dropped entities
   * Ore generation
   * Liquid
+  * Second Layer
+  * Double Blocks
+  * Biomes
+  * Better Generation
 
 ##Bugs:  
 ###~~Bedrock does not generate~~

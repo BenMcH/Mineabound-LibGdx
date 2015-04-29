@@ -15,9 +15,9 @@ public class EntityHandler {
 		entities = new Array<Entity>();
 	}
 
-	public Entity addEntity(Entity Entity) {
-		entities.add(Entity);
-		return Entity;
+	public Entity addEntity(Entity entity) {
+		entities.add(entity);
+		return entity;
 	}
 
 	public Entity getEntity(int index) {
@@ -33,6 +33,8 @@ public class EntityHandler {
 
 	public void render(SpriteBatch batch) {
 		for (Entity e : entities) {
+			if (e.getSprite() == null)
+				continue;
 			e.drawEntity(batch);
 		}
 	}
@@ -44,7 +46,7 @@ public class EntityHandler {
 		Vector2 size = new Vector2(cam.viewportWidth, cam.viewportHeight);
 		Rectangle r = new Rectangle(topLeft.x, topLeft.y, size.x, size.y);
 		for (Entity ent : entities) {
-			if (r.overlaps(ent.getHitBox())){
+			if (r.overlaps(ent.getHitBox())) {
 				visibleEntities.add(ent);
 			}
 		}
@@ -63,6 +65,10 @@ public class EntityHandler {
 		// for (Entity b : getVisibleEntities()) {
 		// b.debugDraw(debugRenderer);
 		// }
+	}
+
+	public void removeEntity(Entity ent) {
+		entities.removeValue(ent, true);
 	}
 
 }

@@ -21,6 +21,7 @@ public class ControlsMenu implements Screen {
 	private Table table;
 	private String changing;
 	private InputListener inputListener;
+
 	@Override
 	public void show() {
 		ClickListener listener = new ClickListener() {

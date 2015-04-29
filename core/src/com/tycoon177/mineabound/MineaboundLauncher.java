@@ -25,7 +25,7 @@ public class MineaboundLauncher extends Game {
 	public static final Color PLAYER_BOUNDING_BOX_COLOR = new Color(1, 0, 1, 1);
 	public static final Color BLOCK_BOUNDING_BOX_COLOR = Color.BLACK;
 	public static final Color ENTITY_BOUNDING_BOX_COLOR = Color.RED;
-	private static final String ASSETS_DOWNLOAD_LINK = "https://www.dropbox.com/s/shu85hh1xgmfzam/default.zip?dl=1";
+	private static final String ASSETS_DOWNLOAD_LINK = "https://www.dropbox.com/s/i7casplawc45gjh/default.zip?dl=1";
 	public static FileHandle texturePacksDirectory;
 	public static String preferencesDirectory = "mineabound" + File.separator;
 	public static Preferences preferences;

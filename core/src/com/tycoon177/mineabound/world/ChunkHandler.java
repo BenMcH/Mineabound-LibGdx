@@ -111,14 +111,13 @@ public class ChunkHandler {
 		}
 		getChunk(chunkIndex).addBlock(x, MathUtils.floor(touchLocation.y), type);
 	}
-	
-	public void addBlock(Vector3 touchLocation, Block block){
+
+	public void addBlock(Vector3 touchLocation, Block block) {
 		float xClickLocation = touchLocation.x;
 		int chunkIndex = (int) (xClickLocation / Chunk.WIDTH);
-		if (xClickLocation < 0)
-			chunkIndex -= 1; // Negative x values start in chunk -1 but the integer division would return 0
 		int x = (int) xClickLocation % Chunk.WIDTH;
 		if (xClickLocation < 0) {
+			chunkIndex -= 1; // Negative x values start in chunk -1 but the integer division would return 0
 			x = Chunk.WIDTH - 1 + x; // If the location is negative, bring it to the corresponding positive location in the chunk.
 		}
 		getChunk(chunkIndex).addBlock(x, MathUtils.floor(touchLocation.y), block);

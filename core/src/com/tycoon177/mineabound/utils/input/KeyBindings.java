@@ -9,66 +9,89 @@ import com.badlogic.gdx.Preferences;
 import com.tycoon177.mineabound.MineaboundLauncher;
 
 public class KeyBindings {
-	public static HashMap<String, Integer> keys = new HashMap<String, Integer>();
+	public static HashMap<String, Integer> keyBindings = new HashMap<String, Integer>();
 	public static Preferences bindingsPreferences = Gdx.app.getPreferences(MineaboundLauncher.preferencesDirectory + "keyBindings");
+
+	/**
+	 * Load the bindings in on creation
+	 */
 	static {
 		loadBindings();
 	}
 
+	/**
+	 * Load the controls in from the file or the default if it is not in the file.
+	 */
 	public static void loadBindings() {
 		@SuppressWarnings("unchecked")
 		Map<String, Integer> map = (Map<String, Integer>) bindingsPreferences.get();
 		if (map.containsKey("right")) {
-			keys.put("right", bindingsPreferences.getInteger("right"));
+			keyBindings.put("right", bindingsPreferences.getInteger("right"));
 		}
 		else
-			keys.put("right", Keys.D);
+			keyBindings.put("right", Keys.D);
 		if (map.containsKey("left")) {
-			keys.put("left", bindingsPreferences.getInteger("left"));
+			keyBindings.put("left", bindingsPreferences.getInteger("left"));
 		}
 		else
-			keys.put("left", Keys.A);
+			keyBindings.put("left", Keys.A);
 
 		if (map.containsKey("jump")) {
-			keys.put("jump", bindingsPreferences.getInteger("jump"));
+			keyBindings.put("jump", bindingsPreferences.getInteger("jump"));
 		}
 		else
-			keys.put("jump", Keys.W);
+			keyBindings.put("jump", Keys.W);
 		if (map.containsKey("drop")) {
-			keys.put("drop", bindingsPreferences.getInteger("drop"));
+			keyBindings.put("drop", bindingsPreferences.getInteger("drop"));
 		}
 		else
-			keys.put("drop", Keys.Q);
+			keyBindings.put("drop", Keys.Q);
 		if (map.containsKey("inventory")) {
-			keys.put("inventory", bindingsPreferences.getInteger("inventory"));
+			keyBindings.put("inventory", bindingsPreferences.getInteger("inventory"));
 		}
 		else
-			keys.put("inventory", Keys.E);
+			keyBindings.put("inventory", Keys.E);
 		if (map.containsKey("debug")) {
-			keys.put("debug", bindingsPreferences.getInteger("debug"));
+			keyBindings.put("debug", bindingsPreferences.getInteger("debug"));
 		}
 		else
-			keys.put("debug", Keys.F3);
+			keyBindings.put("debug", Keys.F3);
 	}
 
+	/**
+	 * Returns the binding for the current button
+	 * 
+	 * @param key
+	 * @return
+	 */
 	public static int getBinding(String key) {
 		loadBindings();
-		if (keys == null)
+		if (keyBindings == null)
 			return -1;
-		return keys.get(key);
+		return keyBindings.get(key);
 	}
 
+	/**
+	 * Saves the bindings to its file.
+	 */
 	public static void saveBindings() {
-		bindingsPreferences.put(keys);
+		bindingsPreferences.put(keyBindings);
 		bindingsPreferences.flush();
 	}
 
+	/**
+	 * Changes the current binding then saves them.
+	 * 
+	 * @param key
+	 * @param keycode
+	 * @return
+	 */
 	public static boolean setBinding(String key, int keycode) {
-		for (int i : keys.values()) {
+		for (int i : keyBindings.values()) {
 			if (i == keycode)
 				return false;
 		}
-		keys.put(key, keycode);
+		keyBindings.put(key, keycode);
 		saveBindings();
 		return true;
 	}

@@ -61,7 +61,8 @@ public class TexturePack {
 		directory = handle;
 		cachedSprites.clear();
 		MineaboundLauncher.preferences.putString("texturePack", handle.path());
-		MineaboundLauncher.preferences.flush();;		
+		MineaboundLauncher.preferences.flush();
+		;
 		System.out.println("Changed to " + handle.path());
 	}
 

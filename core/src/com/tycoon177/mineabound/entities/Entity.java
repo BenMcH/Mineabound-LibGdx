@@ -8,11 +8,12 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.tycoon177.mineabound.screens.GameWorld;
+import com.tycoon177.mineabound.utils.interfaces.Droppable;
 import com.tycoon177.mineabound.world.Chunk;
 import com.tycoon177.mineabound.world.blocks.Block;
 import com.tycoon177.mineabound.world.blocks.BlockType;
 
-public class Entity {
+public class Entity extends Droppable {
 	public static final float DEFAULT_WIDTH = .5f;
 	public static final float DEFAULT_HEIGHT = .5f;
 	public static final float GRAVITY_FORCE = 40f;
@@ -31,7 +32,9 @@ public class Entity {
 	private Rectangle boundingBox;
 	private float startOfFall;
 	private float healthRegenTimer = 0;
-	
+	private boolean living;
+	private Class<? extends Droppable> className = Entity.class;
+
 	public Entity() {
 		velocity = new Vector2();
 		position = new Vector2();
@@ -39,10 +42,15 @@ public class Entity {
 		boundingBox = new Rectangle();
 	}
 
-	public Entity(Vector2 vec2, Sprite sprite) {
+	public Entity(Vector2 position, Sprite sprite) {
 		this();
-		position.set(vec2);
+		this.position.set(position);
 		setSprite(sprite);
+	}
+
+	public Entity(Vector2 pos, Droppable droppable) {
+		this(pos, droppable.getSprite());
+		this.className = droppable.getClass();
 	}
 
 	public Vector2 getPosition() {
@@ -57,7 +65,8 @@ public class Entity {
 		this.sprite = sprite;
 	}
 
-	protected Sprite getSprite() {
+	@Override
+	public Sprite getSprite() {
 		return sprite;
 	}
 
@@ -120,7 +129,7 @@ public class Entity {
 
 	private void healthRegen(float deltaTime) {
 		healthRegenTimer += deltaTime;
-		if(healthRegenTimer >= 4f){
+		if (healthRegenTimer >= 4f) {
 			health += 1;
 			health = MathUtils.clamp(health, 0, getMaxHealth());
 			healthRegenTimer = 0;
@@ -158,7 +167,8 @@ public class Entity {
 			float amountToChangeBy = Math.abs(vel) >= STANDARD_CHANGE ? (direction * STANDARD_CHANGE) : vel;
 			if ((vel > 0 && canRise) || (vel < 0 && canFall)) {
 				updateLocation(new Vector2(0, amountToChangeBy));
-				if(getPosition().y > startOfFall) startOfFall = getPosition().y;
+				if (getPosition().y > startOfFall)
+					startOfFall = getPosition().y;
 				canFall = canFall();
 				canRise = canRise();
 			}
@@ -168,14 +178,17 @@ public class Entity {
 					setPosition(getPosition().x, MathUtils.ceil(getPosition().y));
 					BlockType block = GameWorld.world.getChunkHandler().getBlockTypeAtPos(MathUtils.floor(getPosition().x), Math.round(getPosition().y) - 1);
 					BlockType block2 = GameWorld.world.getChunkHandler().getBlockTypeAtPos(MathUtils.floor(getPosition().x + getSize().x), Math.round(getPosition().y) - 1);
-					setYVelocity((-getVelocity().y) * Math.max(block.getBounciness(), block2.getBounciness()));
+					setYVelocity((-getVelocity().y) * Math.max(block.getRestitution(), block2.getRestitution()));
 					if (Math.abs(getVelocity().y) < .01f) {
-						float fallDamage = Math.abs(startOfFall - getPosition().y) - 4; //-4 for a 3 block fall because where the feet are and where
-																						//the block under your feet are a 1 block difference 
+						float fallDamage = Math.abs(startOfFall - getPosition().y) - 4; // -4 for a 3 block fall because where the feet are and where
+																						// the block under your feet are a 1 block difference
 						if (fallDamage > 0) {
 							this.startOfFall = getPosition().y;
 							damage(fallDamage);
 						}
+					}
+					if (!this.isLiving()) {
+						this.velocity.x = 0;
 					}
 				}
 				else {
@@ -196,6 +209,8 @@ public class Entity {
 
 	public boolean isColliding(Vector2 coordinates, Vector2 size) {
 		this.boundingBox.set(getPosition().x + pixelOffset, getPosition().y, getSize().x - pixelOffset * 2, getSize().y);
+		System.out.println(coordinates);
+		System.out.println(size);
 		Rectangle block = new Rectangle(coordinates.x, coordinates.y, size.x, size.y);
 		return block.overlaps(boundingBox);
 
@@ -308,7 +323,19 @@ public class Entity {
 		this.pixelOffset = offset;
 	}
 
-	public void resetFallHeight(){
+	public void resetFallHeight() {
 		startOfFall = getPosition().y;
+	}
+
+	public Class<? extends Droppable> getClassName() {
+		return className;
+	}
+
+	public boolean isLiving() {
+		return living;
+	}
+
+	public void setLiving(boolean alive) {
+		living = alive;
 	}
 }

@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.tycoon177.mineabound.MineaboundLauncher;
+import com.tycoon177.mineabound.entities.Entity;
 import com.tycoon177.mineabound.entities.EntityHandler;
 import com.tycoon177.mineabound.entities.Player;
 import com.tycoon177.mineabound.utils.input.MineaboundInputProcessor;
@@ -31,7 +32,7 @@ public class GameWorld implements Screen {
 	private Music song;
 	private EntityHandler entityHandler = new EntityHandler();
 	private BitmapFont font;
-	private OrthographicCamera guiCamera;
+	public OrthographicCamera guiCamera;
 
 	@Override
 	public void show() {
@@ -102,7 +103,7 @@ public class GameWorld implements Screen {
 		debug.append("\nX: ");
 		debug.append(getPlayer().getPosition().x);
 		debug.append("\nY: ");
-		debug.append(getPlayer().getPosition().y);		
+		debug.append(getPlayer().getPosition().y);
 		debug.append("\nPlayer Head Location");
 		debug.append("\nX: ");
 		debug.append(getPlayer().getPosition().x);
@@ -198,5 +199,9 @@ public class GameWorld implements Screen {
 
 	public EntityHandler getEntityHandler() {
 		return entityHandler;
+	}
+
+	public void dropEntity(Entity addEntity) {
+
 	}
 }

@@ -40,7 +40,7 @@ public class MainMenu implements Screen {
 			}
 		});
 		options = new VisTextButton("Options");
-		options.addListener(new ClickListener(){
+		options.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				((Game) Gdx.app.getApplicationListener()).setScreen(new ControlsMenu());
 			}

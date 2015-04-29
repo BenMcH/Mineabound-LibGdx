@@ -1,0 +1,23 @@
+List of current and future blocks to be implemented
+
+Stone
+grass
+dirt
+air
+log
+Planks
+door
+bedrock
+bed
+glass
+wool
+
+
+=========Ores=========
+Iron
+Gold
+Adamantite?
+Silver?
+Diamond
+Coal
+======================
