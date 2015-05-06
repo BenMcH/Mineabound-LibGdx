@@ -69,6 +69,11 @@ public class Player extends Entity {
 
 	public void setInventoryOpen(boolean state) {
 		openInventory = state;
+		
+		if(state){
+			setXVelocity(0);
+			
+		}
 	}
 
 	/**

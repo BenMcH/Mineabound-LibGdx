@@ -24,8 +24,9 @@ public class MineaboundInputProcessor implements InputProcessor {
 	private Vector2 lastTouchedPoint;
 
 	private boolean jump = false;
-	private boolean shiftModifier = false;
-	private ItemStack heldItemstack;
+	private float shiftModifier = 1f;
+	private float velocityX = 0f;
+	// private ItemStack heldItemstack;
 
 	/**
 	 * Creates an input processor that will act on the current world.
@@ -42,21 +43,25 @@ public class MineaboundInputProcessor implements InputProcessor {
 	 */
 	@Override
 	public boolean keyDown(int keycode) {
-		if (keycode == KeyBindings.getBinding("left")) {
-			world.getPlayer().setXVelocity(-Player.forceX * (shiftModifier ? 1.5f : 1f));
-			world.getPlayer().setDirection(Player.LEFT);
+		if (!isPaused()) {
+			if (keycode == KeyBindings.getBinding("sprint")) {
+				shiftModifier = 1.3f;
+			}
+			if (keycode == KeyBindings.getBinding("left")) {
+				velocityX = (-Player.forceX);
+				world.getPlayer().setDirection(Player.LEFT);
+			}
+			if (keycode == KeyBindings.getBinding("right")) {
+				velocityX = (Player.forceX);
+				world.getPlayer().setDirection(Player.RIGHT);
+			}
+			if (keycode == KeyBindings.getBinding("jump")) {
+				jump = true;
+			}
+			if (keycode == KeyBindings.getBinding("drop")) {
+				world.getPlayer().drop();
+			}
 		}
-		if (keycode == KeyBindings.getBinding("right")) {
-			world.getPlayer().setXVelocity(Player.forceX * (shiftModifier ? 1.5f : 1f));
-			world.getPlayer().setDirection(Player.RIGHT);
-		}
-		if (keycode == KeyBindings.getBinding("jump")) {
-			jump = true;
-		}
-		if (keycode == KeyBindings.getBinding("drop")) {
-			world.getPlayer().drop();
-		}
-
 		if (keycode == KeyBindings.getBinding("inventory")) {
 			world.getPlayer().setInventoryOpen(!world.getPlayer().isInventoryOpen());
 		}
@@ -79,10 +84,13 @@ public class MineaboundInputProcessor implements InputProcessor {
 	@Override
 	public boolean keyUp(int keycode) {
 		if (keycode == KeyBindings.getBinding("left") || keycode == KeyBindings.getBinding("right")) {
-			world.getPlayer().setXVelocity(0);
+			velocityX = (0);
 		}
 		if (keycode == KeyBindings.getBinding("jump")) {
 			jump = false;
+		}
+		if (keycode == KeyBindings.getBinding("sprint")) {
+			shiftModifier = 1f;
 		}
 		return true;
 	}
@@ -202,9 +210,14 @@ public class MineaboundInputProcessor implements InputProcessor {
 	 * Updates aspects of the world on a "tick"
 	 */
 	public void update() {
+		world.getPlayer().setXVelocity(velocityX * shiftModifier);
 		if (jump)
 			if (world.getPlayer().canJump())
 				world.getPlayer().jump();
+	}
+
+	private boolean isPaused() {
+		return world.getPlayer().isInventoryOpen();
 	}
 
 }

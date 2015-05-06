@@ -56,6 +56,11 @@ public class KeyBindings {
 		}
 		else
 			keyBindings.put("debug", Keys.F3);
+		if (map.containsKey("sprint")) {
+			keyBindings.put("sprint", bindingsPreferences.getInteger("sprint"));
+		}
+		else
+			keyBindings.put("sprint", Keys.SHIFT_LEFT);
 	}
 
 	/**
